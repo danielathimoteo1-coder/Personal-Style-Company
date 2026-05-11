@@ -15,6 +15,7 @@ import {
   Upload,
   Wand2,
 } from "lucide-react";
+import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AnalysisResult, ColorRecommendation } from "@/lib/analysis";
 import { buildPaletteDataUrl } from "@/lib/palette-card";
@@ -787,6 +788,15 @@ export default function Home() {
           )}
         </section>
       </div>
+      <footer className="siteFooter">
+        <span>Personal Style Company</span>
+        <Link href="/politica-de-privacidade">Politica de Privacidade</Link>
+        <Link href="/termos-de-uso">Termos de Uso</Link>
+        <Link href="/exclusao-de-dados">Exclusao de Dados</Link>
+        <a href="mailto:contato@personalstylecompany.com.br">
+          contato@personalstylecompany.com.br
+        </a>
+      </footer>
     </main>
   );
 }
