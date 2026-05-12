@@ -182,6 +182,9 @@ const QUESTIONS: Question[] = [
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 4;
 
+const WELCOME_MESSAGE =
+  "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar com carinho por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
+
 function getSessionStore() {
   const globalStore = globalThis as typeof globalThis & {
     whatsappStyleSessions?: Map<string, ConversationSession>;
@@ -274,7 +277,7 @@ function buildProfile(answers: Partial<ClientProfile>): ClientProfile {
 
 function formatQuestion(session: ConversationSession) {
   const question = QUESTIONS[session.step];
-  return `Pergunta ${session.step + 1}/${QUESTIONS.length}\n\n${question.prompt}`;
+  return `Ellie aqui: pergunta ${session.step + 1}/${QUESTIONS.length}\n\n${question.prompt}`;
 }
 
 function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPersonalAnalysis>>) {
@@ -306,7 +309,9 @@ function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPerson
     ...analysis.acessorios.joias.slice(0, 2),
   ].join("\n- ");
 
-  return `*Sua analise pessoal ficou pronta*
+  return `*Prontinho, sua analise pessoal ficou pronta*
+
+Aqui e a Ellie. Preparei um resumo pratico para voce se visualizar melhor nas cores, pecas e detalhes que tendem a funcionar melhor para sua rotina.
 
 *Resumo*
 ${analysis.metadata.resumo}
@@ -338,24 +343,24 @@ ${occasions}
 *Proximos passos*
 ${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}
 
-Vou enviar tambem sua cartela visual e algumas referencias visuais em imagem.`;
+Vou enviar tambem sua cartela visual e algumas referencias visuais em imagem para ficar mais facil de imaginar tudo na pratica.`;
 }
 
 async function finalizeAnalysis(to: string, session: ConversationSession) {
   if (!session.photoMediaId) {
-    await sendWhatsAppText(to, "Nao encontrei a foto. Envie reiniciar para comecar de novo.");
+    await sendWhatsAppText(to, "Eu nao encontrei sua foto por aqui. Envie reiniciar para eu comecar de novo com voce.");
     return;
   }
 
   const photo = await downloadWhatsAppMedia(session.photoMediaId);
 
   if (!ACCEPTED_ANALYSIS_IMAGE_TYPES.has(photo.mimeType)) {
-    await sendWhatsAppText(to, "A foto precisa ser JPG, PNG ou WEBP. Envie reiniciar e mande outra imagem.");
+    await sendWhatsAppText(to, "Essa foto veio em um formato que eu nao consigo ler. Me envie JPG, PNG ou WEBP depois de escrever reiniciar.");
     return;
   }
 
   if (photo.bytes.length > MAX_ANALYSIS_IMAGE_SIZE) {
-    await sendWhatsAppText(to, "A foto passou de 8 MB. Envie reiniciar e mande uma imagem menor.");
+    await sendWhatsAppText(to, "A foto ficou um pouquinho pesada. Ela precisa ter ate 8 MB. Escreva reiniciar e me mande uma imagem menor.");
     return;
   }
 
@@ -389,10 +394,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (["reiniciar", "comecar", "novo", "cancelar"].includes(normalized)) {
     const session = createSession();
     store.set(to, session);
-    await sendWhatsAppText(
-      to,
-      "Vamos fazer sua analise pessoal pelo WhatsApp. Responda uma pergunta por vez. Se nao souber alguma, responda pular.",
-    );
+    await sendWhatsAppText(to, WELCOME_MESSAGE);
     await sendWhatsAppText(to, formatQuestion(session));
     return;
   }
@@ -402,14 +404,11 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (!session) {
     session = createSession();
     store.set(to, session);
-    await sendWhatsAppText(
-      to,
-      "Oi! Vou conduzir sua analise pessoal por aqui. Responda uma pergunta por vez. Se nao souber alguma, responda pular.",
-    );
+    await sendWhatsAppText(to, WELCOME_MESSAGE);
   }
 
   if (session.status === "processing") {
-    await sendWhatsAppText(to, "Sua analise ainda esta sendo processada. Ja te envio aqui.");
+    await sendWhatsAppText(to, "Ainda estou preparando sua analise. Assim que terminar, eu te envio tudo por aqui.");
     return;
   }
 
@@ -424,7 +423,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
     session.photoMediaId = message.image.id;
   } else {
     if (!text) {
-      await sendWhatsAppText(to, "Responda em texto, por favor. Voce tambem pode escrever pular.");
+      await sendWhatsAppText(to, "Me responde em texto, por favor. Se nao souber essa parte, pode escrever pular.");
       return;
     }
 
@@ -440,7 +439,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   }
 
   session.status = "processing";
-  await sendWhatsAppText(to, "Perfeito. Agora vou gerar sua analise e a cartela visual. Pode levar alguns instantes.");
+  await sendWhatsAppText(to, "Perfeito. Agora a Ellie vai montar sua analise, sua cartela visual e algumas referencias de estilo. Pode levar alguns instantes.");
 
   try {
     await finalizeAnalysis(to, session);
@@ -450,7 +449,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
     session.status = "collecting";
     await sendWhatsAppText(
       to,
-      "Nao consegui finalizar a analise agora. Verifique a configuracao da API ou envie reiniciar para tentar novamente.",
+      "Tive um problema para finalizar sua analise agora. Pode enviar reiniciar para tentarmos de novo em alguns instantes.",
     );
   }
 }
