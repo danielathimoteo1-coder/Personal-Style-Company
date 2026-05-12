@@ -494,9 +494,11 @@ export async function POST(request: Request) {
   );
 
   for (const message of messages) {
-    void handleIncomingMessage(message).catch((error) => {
+    try {
+      await handleIncomingMessage(message);
+    } catch (error) {
       console.error("WhatsApp webhook handler error", error);
-    });
+    }
   }
 
   return NextResponse.json({ ok: true });
