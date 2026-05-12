@@ -5,6 +5,7 @@ import {
   type AnalysisResult,
   type ClientProfile,
 } from "@/lib/analysis";
+import { VISUAL_ASSET_IDS } from "@/lib/style-assets";
 
 export const MAX_ANALYSIS_IMAGE_SIZE = 8 * 1024 * 1024;
 export const ACCEPTED_ANALYSIS_IMAGE_TYPES = new Set([
@@ -34,6 +35,12 @@ Dados declarados pela pessoa:
 - Cores favoritas: ${profile.favoriteColors || "nao informado"}
 - Pecas, caimentos ou estilos que evita: ${profile.avoidedPieces || "nao informado"}
 - Pontos que quer valorizar/equilibrar: ${profile.bodyFocus || "nao informado"}
+- Ocasioes que precisa cobrir: ${profile.occasionNeeds || "nao informado"}
+- Conforto e praticidade: ${profile.comfortNeeds || "nao informado"}
+- Preferencia de cobertura, decotes e comprimentos: ${profile.modestyPreference || "nao informado"}
+- Preferencia de calcados: ${profile.footwearPreference || "nao informado"}
+- Acessorios que usa ou evita: ${profile.accessoryPreference || "nao informado"}
+- Limite de compras ou pecas que ja tem: ${profile.shoppingLimit || "nao informado"}
 - Restricoes/preferencias: ${profile.restrictions || "nao informado"}
 
 Regras importantes:
@@ -47,6 +54,10 @@ Regras importantes:
 - Em paleta.cores_principais, paleta.neutros e paleta.cores_para_evitar, preencha sempre nome, hex e uso. Use hex real no formato #RRGGBB.
 - Em paleta.cores_para_evitar, inclua cores especificas que a pessoa deve evitar perto do rosto ou adaptar, nao apenas frases genericas.
 - Em imagens, escreva titulos e legendas curtas que ajudem a ilustrar cada secao do relatorio. Nao inclua URLs.
+- Em roupas.ocasioes_especificas, gere pelo menos 8 ocasioes praticas. Inclua sempre trabalho, praia, casamento, frio intenso/neve, igreja/cerimonia discreta, faculdade, casa/home office e viagem, adaptando ao perfil e ao que foi declarado.
+- Para igreja/cerimonia discreta, trate como contexto de roupa sobria quando solicitado ou util. Nao inferir religiao da pessoa.
+- Para cada ocasiao especifica, escolha asset_id somente entre estes ids estaticos: ${VISUAL_ASSET_IDS.join(", ")}.
+- Inclua recomendacoes concretas de roupas, cores, acessorios, maquiagem/cabelo e o que evitar/adaptar em cada ocasiao.
 - Retorne somente JSON compativel com o schema solicitado.
 `;
 }
@@ -87,7 +98,7 @@ export async function runPersonalAnalysis({
         schema: analysisJsonSchema,
       },
     },
-    max_output_tokens: 4800,
+    max_output_tokens: 7000,
   });
 
   const parsed = JSON.parse(response.output_text) as AnalysisResult;

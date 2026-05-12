@@ -38,6 +38,12 @@ export async function POST(request: Request) {
       favoriteColors: readString(formData.get("favoriteColors")),
       avoidedPieces: readString(formData.get("avoidedPieces")),
       bodyFocus: readString(formData.get("bodyFocus")),
+      occasionNeeds: readString(formData.get("occasionNeeds")),
+      comfortNeeds: readString(formData.get("comfortNeeds")),
+      modestyPreference: readString(formData.get("modestyPreference")),
+      footwearPreference: readString(formData.get("footwearPreference")),
+      accessoryPreference: readString(formData.get("accessoryPreference")),
+      shoppingLimit: readString(formData.get("shoppingLimit")),
       restrictions: readString(formData.get("restrictions")),
     };
 

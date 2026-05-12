@@ -1,4 +1,6 @@
 import sharp from "sharp";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { buildPaletteSvg } from "@/lib/palette-card";
 import type { AnalysisResult } from "@/lib/analysis";
 
@@ -164,5 +166,35 @@ export async function sendPaletteImage(to: string, analysis: AnalysisResult) {
     to,
     mediaId,
     caption: "Sua cartela visual de cores.",
+  });
+}
+
+export async function sendPublicImageAsset({
+  to,
+  publicSrc,
+  caption,
+}: {
+  to: string;
+  publicSrc: string;
+  caption: string;
+}) {
+  const cleanSrc = publicSrc.split("?")[0].replace(/^\/+/, "");
+
+  if (!cleanSrc || cleanSrc.includes("..")) {
+    throw new Error("Asset publico invalido.");
+  }
+
+  const filePath = path.join(process.cwd(), "public", cleanSrc);
+  const buffer = await readFile(filePath);
+  const mediaId = await uploadWhatsAppMedia({
+    buffer,
+    filename: path.basename(cleanSrc),
+    mimeType: "image/png",
+  });
+
+  await sendWhatsAppImageById({
+    to,
+    mediaId,
+    caption,
   });
 }

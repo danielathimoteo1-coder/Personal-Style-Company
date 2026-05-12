@@ -1,3 +1,5 @@
+import { VISUAL_ASSET_IDS, type VisualAssetId } from "@/lib/style-assets";
+
 export type ColorRecommendation = {
   nome: string;
   hex: string;
@@ -13,6 +15,18 @@ export type ShoppingPriority = {
   prioridade: string;
   item: string;
   motivo: string;
+};
+
+export type OccasionRecommendation = {
+  ocasiao: string;
+  intencao: string;
+  look: string;
+  pecas_chave: string[];
+  cores: string[];
+  acessorios: string[];
+  maquiagem_cabelo: string;
+  evitar_ou_adaptar: string[];
+  asset_id: VisualAssetId;
 };
 
 export type IllustrationRecommendation = {
@@ -50,6 +64,7 @@ export type AnalysisResult = {
     tecidos: string[];
     pecas_chave: string[];
     looks_recomendados: LookRecommendation[];
+    ocasioes_especificas: OccasionRecommendation[];
     evitar_ou_adaptar: string[];
   };
   maquiagem: {
@@ -96,6 +111,12 @@ export type ClientProfile = {
   favoriteColors: string;
   avoidedPieces: string;
   bodyFocus: string;
+  occasionNeeds: string;
+  comfortNeeds: string;
+  modestyPreference: string;
+  footwearPreference: string;
+  accessoryPreference: string;
+  shoppingLimit: string;
   restrictions: string;
 };
 
@@ -128,6 +149,48 @@ const shoppingSchema = {
     motivo: { type: "string" },
   },
   required: ["prioridade", "item", "motivo"],
+  additionalProperties: false,
+};
+
+const occasionSchema = {
+  type: "object",
+  properties: {
+    ocasiao: { type: "string" },
+    intencao: { type: "string" },
+    look: { type: "string" },
+    pecas_chave: {
+      type: "array",
+      items: { type: "string" },
+    },
+    cores: {
+      type: "array",
+      items: { type: "string" },
+    },
+    acessorios: {
+      type: "array",
+      items: { type: "string" },
+    },
+    maquiagem_cabelo: { type: "string" },
+    evitar_ou_adaptar: {
+      type: "array",
+      items: { type: "string" },
+    },
+    asset_id: {
+      type: "string",
+      enum: VISUAL_ASSET_IDS,
+    },
+  },
+  required: [
+    "ocasiao",
+    "intencao",
+    "look",
+    "pecas_chave",
+    "cores",
+    "acessorios",
+    "maquiagem_cabelo",
+    "evitar_ou_adaptar",
+    "asset_id",
+  ],
   additionalProperties: false,
 };
 
@@ -234,6 +297,11 @@ export const analysisJsonSchema = {
           type: "array",
           items: lookSchema,
         },
+        ocasioes_especificas: {
+          type: "array",
+          minItems: 8,
+          items: occasionSchema,
+        },
         evitar_ou_adaptar: {
           type: "array",
           items: { type: "string" },
@@ -245,6 +313,7 @@ export const analysisJsonSchema = {
         "tecidos",
         "pecas_chave",
         "looks_recomendados",
+        "ocasioes_especificas",
         "evitar_ou_adaptar"
       ],
       additionalProperties: false,
@@ -432,6 +501,96 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
         {
           ocasiao: "Noite",
           proposta: "Base escura, terceira peca vinho suave e ponto de brilho proximo ao rosto.",
+        },
+      ],
+      ocasioes_especificas: [
+        {
+          ocasiao: "Trabalho",
+          intencao: "Transmitir competencia sem rigidez excessiva.",
+          look: "Calca reta, camisa clara, blazer azul petroleo e sapato fechado confortavel.",
+          pecas_chave: ["Blazer", "Camisa clara", "Calca de alfaiataria", "Sapato fechado"],
+          cores: ["Azul petroleo", "Marfim", "Cinza medio"],
+          acessorios: ["Brinco pequeno", "Bolsa estruturada", "Relogio discreto"],
+          maquiagem_cabelo: "Pele natural, sobrancelha penteada e batom neutro rosado.",
+          evitar_ou_adaptar: ["Tecidos transparentes", "Barras sem ajuste", "Excesso de brilho"],
+          asset_id: "work-tailoring",
+        },
+        {
+          ocasiao: "Praia",
+          intencao: "Ficar confortavel, fresca e visualmente coordenada.",
+          look: "Saida leve, chapeu ou viseira, oculos de sol e sandalia pratica.",
+          pecas_chave: ["Saida de praia", "Biquini ou maio na paleta", "Sandalia", "Bolsa leve"],
+          cores: ["Marfim", "Verde oliva", "Rosa queimado"],
+          acessorios: ["Oculos de sol", "Chapeu", "Bolsa de palha ou tecido"],
+          maquiagem_cabelo: "Protetor com cor, lip balm e cabelo preso com acabamento simples.",
+          evitar_ou_adaptar: ["Tecidos pesados", "Metais que esquentam muito", "Cores neon perto do rosto"],
+          asset_id: "beach-light",
+        },
+        {
+          ocasiao: "Casamento",
+          intencao: "Ficar elegante respeitando horario e local da cerimonia.",
+          look: "Vestido midi ou conjunto fluido em cor da paleta, sandalia delicada e clutch.",
+          pecas_chave: ["Vestido midi", "Conjunto fluido", "Clutch", "Sandalia delicada"],
+          cores: ["Vinho suave", "Rosa queimado", "Azul petroleo"],
+          acessorios: ["Brinco medio", "Clutch", "Metal dourado claro"],
+          maquiagem_cabelo: "Pele luminosa, olhos suaves e batom com presenca controlada.",
+          evitar_ou_adaptar: ["Branco total", "Preto muito pesado de dia", "Tecidos casuais demais"],
+          asset_id: "wedding-guest",
+        },
+        {
+          ocasiao: "Frio intenso ou neve",
+          intencao: "Manter aquecimento sem perder proporcao visual.",
+          look: "Camadas termicas, tricot fino, casaco estruturado e bota de sola segura.",
+          pecas_chave: ["Casaco estruturado", "Tricot", "Cachecol", "Bota"],
+          cores: ["Cinza medio", "Chocolate", "Vinho suave"],
+          acessorios: ["Cachecol", "Luvas", "Gorro em cor coordenada"],
+          maquiagem_cabelo: "Pele hidratada, blush cremoso e batom hidratante com cor.",
+          evitar_ou_adaptar: ["Volume sem cintura", "Tecidos que molham facil", "Sapato escorregadio"],
+          asset_id: "snow-layering",
+        },
+        {
+          ocasiao: "Igreja ou cerimonia discreta",
+          intencao: "Criar presenca respeitosa, elegante e confortavel.",
+          look: "Saia midi ou calca ampla, blusa com boa cobertura e terceira peca leve.",
+          pecas_chave: ["Saia midi", "Calca ampla", "Blusa estruturada", "Cardigan ou blazer leve"],
+          cores: ["Marfim", "Verde oliva", "Chocolate"],
+          acessorios: ["Brinco pequeno", "Bolsa media", "Sapato fechado ou sandalia discreta"],
+          maquiagem_cabelo: "Maquiagem natural e cabelo alinhado, sem excesso de brilho.",
+          evitar_ou_adaptar: ["Decotes profundos se a pessoa preferir discricao", "Comprimentos desconfortaveis"],
+          asset_id: "church-elegant",
+        },
+        {
+          ocasiao: "Faculdade",
+          intencao: "Unir conforto para muitas horas com identidade visual.",
+          look: "Jeans reto, camiseta ou camisa leve, terceira peca fina e tenis limpo.",
+          pecas_chave: ["Jeans reto", "Camiseta boa", "Camisa leve", "Tenis"],
+          cores: ["Azul petroleo", "Marfim", "Verde oliva"],
+          acessorios: ["Mochila ou tote", "Oculos", "Brinco pequeno"],
+          maquiagem_cabelo: "Beleza rapida: protetor, blush leve e mascara se desejar.",
+          evitar_ou_adaptar: ["Bolsa pesada demais", "Sapatos desconfortaveis", "Tecidos que amassam muito"],
+          asset_id: "college-casual",
+        },
+        {
+          ocasiao: "Casa e home office",
+          intencao: "Ficar confortavel sem perder a sensacao de estar pronta.",
+          look: "Malha boa, calca confortavel de corte limpo e cardigan leve.",
+          pecas_chave: ["Malha premium", "Calca confortavel", "Cardigan", "Flat ou mule"],
+          cores: ["Rosa queimado", "Marfim", "Chocolate"],
+          acessorios: ["Argola pequena", "Presilha", "Oculos de grau se usar"],
+          maquiagem_cabelo: "Pele hidratada, lip balm e cabelo preso com acabamento.",
+          evitar_ou_adaptar: ["Pecas deformadas", "Pijama em videochamada", "Cores que apagam no video"],
+          asset_id: "home-comfort",
+        },
+        {
+          ocasiao: "Viagem",
+          intencao: "Montar mala versatil com repeticao inteligente.",
+          look: "Camadas leves, base neutra, tenis confortavel e uma cor de destaque.",
+          pecas_chave: ["Calca confortavel", "Jaqueta leve", "Tenis", "Bolsa transversal"],
+          cores: ["Cinza medio", "Marfim", "Azul petroleo"],
+          acessorios: ["Bolsa transversal", "Oculos de sol", "Lenço"],
+          maquiagem_cabelo: "Kit minimo: protetor, blush, mascara e batom versatil.",
+          evitar_ou_adaptar: ["Pecas que so combinam uma vez", "Sapato novo", "Tecidos muito delicados"],
+          asset_id: "travel-capsule",
         },
       ],
       evitar_ou_adaptar: [

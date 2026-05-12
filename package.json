@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "generate:style-assets": "node scripts/generate-style-assets.mjs",
     "start": "next start -H 0.0.0.0 -p 3000",
     "typecheck": "tsc --noEmit"
   },

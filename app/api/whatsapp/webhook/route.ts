@@ -8,9 +8,11 @@ import {
 import {
   downloadWhatsAppMedia,
   sendPaletteImage,
+  sendPublicImageAsset,
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
+import { getStaticVisualAssetsForAnalysis } from "@/lib/style-assets";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -132,6 +134,41 @@ const QUESTIONS: Question[] = [
     prompt: "O que voce quer valorizar ou equilibrar no visual?",
   },
   {
+    key: "occasionNeeds",
+    type: "text",
+    prompt:
+      "Quais ocasioes voce quer cobrir? Ex.: praia, casamento, trabalho, neve, igreja, faculdade, viagem, casa. Pode listar varias.",
+  },
+  {
+    key: "comfortNeeds",
+    type: "text",
+    prompt:
+      "O que e importante para seu conforto? Ex.: tecido fresco, nada apertado, roupa facil de lavar, sem salto.",
+  },
+  {
+    key: "modestyPreference",
+    type: "text",
+    prompt:
+      "Alguma preferencia de cobertura, decotes ou comprimentos? Ex.: mais discreto, curto ok, sem decote. Se nao tiver, responda pular.",
+  },
+  {
+    key: "footwearPreference",
+    type: "text",
+    prompt: "Preferencia de calcados? Ex.: tenis, salto baixo, sandalia, sapato fechado, sem salto.",
+  },
+  {
+    key: "accessoryPreference",
+    type: "text",
+    prompt:
+      "Acessorios que usa ou evita? Ex.: oculos de sol, brincos grandes, relogio, bolsas pequenas.",
+  },
+  {
+    key: "shoppingLimit",
+    type: "text",
+    prompt:
+      "Quer comprar pecas novas ou prefere usar o que ja tem? Existe limite de compras?",
+  },
+  {
     key: "avoidedPieces",
     type: "text",
     prompt: "Tem pecas, tecidos, cores ou estilos que voce evita?",
@@ -225,6 +262,12 @@ function buildProfile(answers: Partial<ClientProfile>): ClientProfile {
     favoriteColors: answers.favoriteColors || "",
     avoidedPieces: answers.avoidedPieces || "",
     bodyFocus: answers.bodyFocus || "",
+    occasionNeeds: answers.occasionNeeds || "",
+    comfortNeeds: answers.comfortNeeds || "",
+    modestyPreference: answers.modestyPreference || "",
+    footwearPreference: answers.footwearPreference || "",
+    accessoryPreference: answers.accessoryPreference || "",
+    shoppingLimit: answers.shoppingLimit || "",
     restrictions: answers.restrictions || "",
   };
 }
@@ -247,6 +290,10 @@ function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPerson
   const looks = analysis.roupas.looks_recomendados
     .slice(0, 3)
     .map((look) => `- ${look.ocasiao}: ${look.proposta}`)
+    .join("\n");
+  const occasions = analysis.roupas.ocasioes_especificas
+    .slice(0, 8)
+    .map((occasion) => `- ${occasion.ocasiao}: ${occasion.look}`)
     .join("\n");
   const makeup = [
     ...analysis.maquiagem.pele.slice(0, 2),
@@ -279,6 +326,9 @@ Pecas-chave: ${pieces}
 *Looks sugeridos*
 ${looks}
 
+*Por ocasiao*
+${occasions}
+
 *Maquiagem*
 - ${makeup}
 
@@ -288,7 +338,7 @@ ${looks}
 *Proximos passos*
 ${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}
 
-Vou enviar tambem sua cartela visual de cores em imagem.`;
+Vou enviar tambem sua cartela visual e algumas referencias visuais em imagem.`;
 }
 
 async function finalizeAnalysis(to: string, session: ConversationSession) {
@@ -317,6 +367,15 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
 
   await sendWhatsAppTextChunks(to, formatAnalysisForWhatsApp(analysis));
   await sendPaletteImage(to, analysis);
+
+  const visualAssets = getStaticVisualAssetsForAnalysis(analysis, 4);
+  for (const asset of visualAssets) {
+    await sendPublicImageAsset({
+      to,
+      publicSrc: asset.src,
+      caption: `${asset.title}\n${asset.caption}`,
+    });
+  }
 }
 
 async function handleIncomingMessage(message: WhatsAppMessage) {

@@ -19,6 +19,12 @@ import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AnalysisResult, ColorRecommendation } from "@/lib/analysis";
 import { buildPaletteDataUrl } from "@/lib/palette-card";
+import {
+  getAssetById,
+  getStaticVisualAssetsForAnalysis,
+  pickAssetForOccasion,
+  type StaticVisualAsset,
+} from "@/lib/style-assets";
 
 type ApiResponse = {
   mode: "ia" | "demo";
@@ -48,6 +54,12 @@ const initialForm = {
   favoriteColors: "",
   avoidedPieces: "",
   bodyFocus: "",
+  occasionNeeds: "",
+  comfortNeeds: "",
+  modestyPreference: "",
+  footwearPreference: "",
+  accessoryPreference: "",
+  shoppingLimit: "",
   restrictions: "",
 };
 
@@ -56,40 +68,34 @@ type IllustrationSlot = keyof AnalysisResult["imagens"];
 
 const sectionVisuals: Record<IllustrationSlot, { src: string; alt: string }> = {
   perfil_visual: {
-    src: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80",
-    alt: "Editorial de moda em luz natural",
+    src: getAssetById("capsule-rack").src,
+    alt: "Referencia visual de leitura de estilo",
   },
   paleta: {
-    src: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
-    alt: "Tecidos e roupas em uma paleta coordenada",
+    src: getAssetById("color-palette").src,
+    alt: "Amostras de cores coordenadas",
   },
   roupas: {
-    src: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=900&q=80",
+    src: getAssetById("capsule-rack").src,
     alt: "Arara de roupas organizada",
   },
   maquiagem: {
-    src: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=900&q=80",
-    alt: "Produtos de maquiagem sobre uma mesa",
+    src: getAssetById("natural-makeup").src,
+    alt: "Referencia de maquiagem natural",
   },
   acessorios: {
-    src: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=900&q=80",
+    src: getAssetById("gold-jewelry").src,
     alt: "Joias e acessorios delicados",
   },
   compras: {
-    src: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=900&q=80",
-    alt: "Vitrine e sacolas de compras",
+    src: getAssetById("shopping-priority").src,
+    alt: "Compras prioritarias",
   },
   proximos_passos: {
-    src: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&q=80",
-    alt: "Moodboard de referencias de moda",
+    src: getAssetById("travel-capsule").src,
+    alt: "Plano visual de proximos passos",
   },
 };
-
-const lookImages = [
-  "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=80",
-];
 
 function TagList({ items }: { items: string[] }) {
   return (
@@ -157,6 +163,23 @@ function IllustrationCard({
   );
 }
 
+function VisualReferenceGrid({ assets }: { assets: StaticVisualAsset[] }) {
+  return (
+    <div className="visualReferenceGrid">
+      {assets.map((asset) => (
+        <figure className="visualReferenceCard" key={asset.id}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={asset.src} alt={asset.alt} loading="lazy" />
+          <figcaption>
+            <strong>{asset.title}</strong>
+            <span>{asset.caption}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 function ReportSection({
   icon,
   title,
@@ -202,6 +225,10 @@ export default function Home() {
   const canSubmit = useMemo(
     () => Boolean(photo && form.age && form.sex && form.height && !isLoading),
     [photo, form.age, form.sex, form.height, isLoading],
+  );
+  const selectedVisualAssets = useMemo(
+    () => (analysis ? getStaticVisualAssetsForAnalysis(analysis, 12) : []),
+    [analysis],
   );
 
   function updateField(field: keyof FormState, value: string) {
@@ -454,6 +481,16 @@ export default function Home() {
               />
             </label>
 
+            <label>
+              Ocasiões que quer cobrir
+              <textarea
+                onChange={(event) => updateField("occasionNeeds", event.target.value)}
+                placeholder="Ex.: praia, casamento, trabalho, neve, igreja, faculdade, viagem, casa..."
+                rows={3}
+                value={form.occasionNeeds}
+              />
+            </label>
+
             <div className="fieldGrid">
               <label>
                 Clima
@@ -486,6 +523,38 @@ export default function Home() {
                   <option value="medio">Medio</option>
                   <option value="premium">Premium</option>
                 </select>
+              </label>
+            </div>
+
+            <div className="fieldGrid">
+              <label>
+                Conforto
+                <input
+                  onChange={(event) => updateField("comfortNeeds", event.target.value)}
+                  placeholder="Ex.: tecido fresco, nada apertado"
+                  type="text"
+                  value={form.comfortNeeds}
+                />
+              </label>
+
+              <label>
+                Calcados
+                <input
+                  onChange={(event) => updateField("footwearPreference", event.target.value)}
+                  placeholder="Ex.: sem salto, tenis, sandalia"
+                  type="text"
+                  value={form.footwearPreference}
+                />
+              </label>
+
+              <label>
+                Limite de compras
+                <input
+                  onChange={(event) => updateField("shoppingLimit", event.target.value)}
+                  placeholder="Ex.: poucas compras, usar o que ja tenho"
+                  type="text"
+                  value={form.shoppingLimit}
+                />
               </label>
             </div>
 
@@ -530,12 +599,32 @@ export default function Home() {
             </label>
 
             <label>
+              Cobertura, decotes e comprimentos
+              <textarea
+                onChange={(event) => updateField("modestyPreference", event.target.value)}
+                placeholder="Ex.: prefiro roupas discretas, gosto de decote V, evito curto..."
+                rows={2}
+                value={form.modestyPreference}
+              />
+            </label>
+
+            <label>
               Pecas ou estilos que evita
               <textarea
                 onChange={(event) => updateField("avoidedPieces", event.target.value)}
                 placeholder="Ex.: salto alto, roupas justas, estampas grandes..."
                 rows={2}
                 value={form.avoidedPieces}
+              />
+            </label>
+
+            <label>
+              Acessorios que usa ou evita
+              <textarea
+                onChange={(event) => updateField("accessoryPreference", event.target.value)}
+                placeholder="Ex.: uso oculos de sol, evito brincos grandes, gosto de bolsas pequenas..."
+                rows={2}
+                value={form.accessoryPreference}
               />
             </label>
 
@@ -668,17 +757,55 @@ export default function Home() {
                 <h3>Pecas-chave</h3>
                 <TagList items={analysis.roupas.pecas_chave} />
                 <div className="lookGrid">
-                  {analysis.roupas.looks_recomendados.map((look, index) => (
-                    <div className="lookItem" key={look.ocasiao}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={lookImages[index % lookImages.length]} alt="" loading="lazy" />
-                      <strong>{look.ocasiao}</strong>
-                      <p>{look.proposta}</p>
-                    </div>
-                  ))}
+                  {analysis.roupas.looks_recomendados.map((look) => {
+                    const asset = getAssetById(pickAssetForOccasion(look.ocasiao));
+
+                    return (
+                      <div className="lookItem" key={look.ocasiao}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={asset.src} alt={asset.alt} loading="lazy" />
+                        <strong>{look.ocasiao}</strong>
+                        <p>{look.proposta}</p>
+                      </div>
+                    );
+                  })}
                 </div>
                 <h3>Evitar ou adaptar</h3>
                 <TagList items={analysis.roupas.evitar_ou_adaptar} />
+              </ReportSection>
+
+              <ReportSection icon={<BadgeCheck size={20} aria-hidden />} title="Sugestoes por ocasiao">
+                <div className="occasionGrid">
+                  {analysis.roupas.ocasioes_especificas.map((occasion) => {
+                    const asset = getAssetById(occasion.asset_id);
+
+                    return (
+                      <article className="occasionCard" key={occasion.ocasiao}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={asset.src} alt={asset.alt} loading="lazy" />
+                        <div>
+                          <span>{occasion.intencao}</span>
+                          <h3>{occasion.ocasiao}</h3>
+                          <p>{occasion.look}</p>
+                          <h4>Pecas-chave</h4>
+                          <TagList items={occasion.pecas_chave} />
+                          <h4>Cores</h4>
+                          <TagList items={occasion.cores} />
+                          <h4>Acessorios</h4>
+                          <TagList items={occasion.acessorios} />
+                          <h4>Maquiagem e cabelo</h4>
+                          <p>{occasion.maquiagem_cabelo}</p>
+                          <h4>Evitar ou adaptar</h4>
+                          <TagList items={occasion.evitar_ou_adaptar} />
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </ReportSection>
+
+              <ReportSection icon={<Images size={20} aria-hidden />} title="Referencias visuais">
+                <VisualReferenceGrid assets={selectedVisualAssets} />
               </ReportSection>
 
               <ReportSection icon={<Images size={20} aria-hidden />} title="Exemplos na pessoa">
