@@ -1,22 +1,3 @@
-# Saida publica do guarda-roupa
-
-Nao coloque imagens manualmente aqui.
-
-Use a pasta raiz `imagens/`. O comando abaixo copia as imagens para
-`public/wardrobe/items/` e gera o catalogo usado pela Ellie:
-
-```bash
-npm run generate:wardrobe-catalog
-```
-
-Arquivos gerados:
-
-```text
-public/wardrobe/items/...
-public/wardrobe/catalog.generated.json
-lib/wardrobe-catalog.generated.ts
-```
-*** Add File: imagens/README.md
 # Imagens do guarda-roupa da Ellie
 
 Coloque todas as fotos reais nesta pasta, usando subpastas livres.
@@ -45,13 +26,3 @@ npm run generate:wardrobe-catalog
 ```
 
 O sistema copia tudo para a pasta publica do site e atualiza o mapa que a Ellie usa para escolher as pecas.
-
-Extensoes aceitas: `.jpg`, `.jpeg`, `.png` e `.webp`.
-
-Depois de adicionar imagens, rode:
-
-```bash
-npm run generate:wardrobe-catalog
-```
-
-Esse comando atualiza `public/wardrobe/catalog.generated.json` e `lib/wardrobe-catalog.generated.ts`. A Ellie usa os IDs gerados no catalogo e nunca inventa caminhos de imagens.

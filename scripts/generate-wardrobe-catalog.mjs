@@ -1,9 +1,11 @@
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const wardrobeDir = path.join(root, "public", "wardrobe");
-const jsonOut = path.join(wardrobeDir, "catalog.generated.json");
+const sourceImagesDir = path.join(root, "imagens");
+const publicWardrobeDir = path.join(root, "public", "wardrobe");
+const publicItemsDir = path.join(publicWardrobeDir, "items");
+const jsonOut = path.join(publicWardrobeDir, "catalog.generated.json");
 const tsOut = path.join(root, "lib", "wardrobe-catalog.generated.ts");
 const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
@@ -143,7 +145,12 @@ function inferClimate(text) {
 }
 
 async function walk(dir) {
-  const entries = await readdir(dir, { withFileTypes: true });
+  let entries = [];
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
   const files = [];
 
   for (const entry of entries) {
@@ -159,7 +166,7 @@ async function walk(dir) {
 }
 
 async function readManifest() {
-  const manifestPath = path.join(wardrobeDir, "wardrobe.manifest.json");
+  const manifestPath = path.join(sourceImagesDir, "wardrobe.manifest.json");
   try {
     return JSON.parse(await readFile(manifestPath, "utf8"));
   } catch {
@@ -168,11 +175,12 @@ async function readManifest() {
 }
 
 function itemFromPath(filePath, manifest) {
-  const relative = path.relative(wardrobeDir, filePath).replaceAll(path.sep, "/");
+  const relative = path.relative(sourceImagesDir, filePath).replaceAll(path.sep, "/");
   const parts = relative.split("/");
+  const folders = parts.slice(0, -1);
   const filename = parts.at(-1) || "";
   const basename = filename.replace(/\.[^.]+$/, "");
-  const [categoria = "geral", subcategoria = "geral", cor = "variado", modelagem = "geral"] = parts;
+  const [categoria = "geral", subcategoria = "geral", cor = "variado", modelagem = "geral"] = folders;
   const text = `${relative} ${basename}`;
   const override = manifest.items?.[relative] || manifest.items?.[basename] || {};
   const defaults = manifest.defaults || {};
@@ -194,23 +202,34 @@ function itemFromPath(filePath, manifest) {
     tags: Array.from(
       new Set([categoria, subcategoria, cor, modelagem, basename, ...(override.tags || [])].map(slug).filter(Boolean)),
     ),
-    src: `/wardrobe/${relative}`,
+    src: `/wardrobe/items/${relative}`,
   };
 
   return item;
 }
 
-const manifest = await readManifest();
-let files = [];
+async function syncPublicImages(files) {
+  if (!publicItemsDir.startsWith(publicWardrobeDir)) {
+    throw new Error("Diretorio publico de imagens invalido.");
+  }
 
-try {
-  files = await walk(wardrobeDir);
-} catch {
-  files = [];
+  await rm(publicItemsDir, { recursive: true, force: true });
+  await mkdir(publicItemsDir, { recursive: true });
+
+  await Promise.all(
+    files.map(async (file) => {
+      const relative = path.relative(sourceImagesDir, file);
+      const target = path.join(publicItemsDir, relative);
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(file, target);
+    }),
+  );
 }
 
+const manifest = await readManifest();
+const files = await walk(sourceImagesDir);
+
 const catalog = files
-  .filter((file) => !file.endsWith("catalog.generated.json"))
   .map((file) => itemFromPath(file, manifest))
   .sort((a, b) => a.id.localeCompare(b.id));
 
@@ -222,6 +241,7 @@ if (duplicateIds.length) {
   throw new Error(`IDs duplicados no catalogo: ${Array.from(new Set(duplicateIds)).join(", ")}`);
 }
 
+await syncPublicImages(files);
 await writeFile(jsonOut, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
 await writeFile(
   tsOut,
@@ -233,4 +253,4 @@ await writeFile(
   "utf8",
 );
 
-console.log(`Generated ${catalog.length} wardrobe items.`);
+console.log(`Generated ${catalog.length} wardrobe items from ./imagens.`);
