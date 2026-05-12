@@ -12,7 +12,7 @@ import {
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
-import { getStaticVisualAssetsForAnalysis } from "@/lib/style-assets";
+import { getWardrobeAssetsForAnalysis } from "@/lib/wardrobe";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -132,12 +132,6 @@ const QUESTIONS: Question[] = [
     key: "bodyFocus",
     type: "text",
     prompt: "O que voce quer valorizar ou equilibrar no visual?",
-  },
-  {
-    key: "occasionNeeds",
-    type: "text",
-    prompt:
-      "Quais ocasioes voce quer cobrir? Ex.: praia, casamento, trabalho, neve, igreja, faculdade, viagem, casa. Pode listar varias.",
   },
   {
     key: "comfortNeeds",
@@ -296,7 +290,7 @@ function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPerson
     .join("\n");
   const occasions = analysis.roupas.ocasioes_especificas
     .slice(0, 8)
-    .map((occasion) => `- ${occasion.ocasiao}: ${occasion.look}`)
+    .map((occasion) => `- ${occasion.ocasiao}: ${occasion.look_completo}`)
     .join("\n");
   const makeup = [
     ...analysis.maquiagem.pele.slice(0, 2),
@@ -373,12 +367,12 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
   await sendWhatsAppTextChunks(to, formatAnalysisForWhatsApp(analysis));
   await sendPaletteImage(to, analysis);
 
-  const visualAssets = getStaticVisualAssetsForAnalysis(analysis, 4);
+  const visualAssets = getWardrobeAssetsForAnalysis(analysis, 8);
   for (const asset of visualAssets) {
     await sendPublicImageAsset({
       to,
       publicSrc: asset.src,
-      caption: `${asset.title}\n${asset.caption}`,
+      caption: `${asset.title}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
     });
   }
 }

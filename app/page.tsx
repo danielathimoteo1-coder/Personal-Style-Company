@@ -20,11 +20,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AnalysisResult, ColorRecommendation } from "@/lib/analysis";
 import { buildPaletteDataUrl } from "@/lib/palette-card";
 import {
-  getAssetById,
-  getStaticVisualAssetsForAnalysis,
-  pickAssetForOccasion,
-  type StaticVisualAsset,
-} from "@/lib/style-assets";
+  getFallbackItemForOccasion,
+  getWardrobeAssetsForAnalysis,
+  getWardrobeItemById,
+  getWardrobeItemsByIds,
+  itemToImageAsset,
+  type WardrobeImageAsset,
+} from "@/lib/wardrobe";
 
 type ApiResponse = {
   mode: "ia" | "demo";
@@ -54,7 +56,6 @@ const initialForm = {
   favoriteColors: "",
   avoidedPieces: "",
   bodyFocus: "",
-  occasionNeeds: "",
   comfortNeeds: "",
   modestyPreference: "",
   footwearPreference: "",
@@ -68,31 +69,31 @@ type IllustrationSlot = keyof AnalysisResult["imagens"];
 
 const sectionVisuals: Record<IllustrationSlot, { src: string; alt: string }> = {
   perfil_visual: {
-    src: getAssetById("capsule-rack").src,
+    src: getWardrobeItemById("fallback_capsule_rack").src,
     alt: "Referencia visual de leitura de estilo",
   },
   paleta: {
-    src: getAssetById("color-palette").src,
+    src: getWardrobeItemById("fallback_color_palette").src,
     alt: "Amostras de cores coordenadas",
   },
   roupas: {
-    src: getAssetById("capsule-rack").src,
+    src: getWardrobeItemById("fallback_capsule_rack").src,
     alt: "Arara de roupas organizada",
   },
   maquiagem: {
-    src: getAssetById("natural-makeup").src,
+    src: getWardrobeItemById("fallback_natural_makeup").src,
     alt: "Referencia de maquiagem natural",
   },
   acessorios: {
-    src: getAssetById("gold-jewelry").src,
+    src: getWardrobeItemById("fallback_gold_jewelry").src,
     alt: "Joias e acessorios delicados",
   },
   compras: {
-    src: getAssetById("shopping-priority").src,
+    src: getWardrobeItemById("fallback_shopping_priority").src,
     alt: "Compras prioritarias",
   },
   proximos_passos: {
-    src: getAssetById("travel-capsule").src,
+    src: getWardrobeItemById("fallback_travel_capsule").src,
     alt: "Plano visual de proximos passos",
   },
 };
@@ -163,7 +164,7 @@ function IllustrationCard({
   );
 }
 
-function VisualReferenceGrid({ assets }: { assets: StaticVisualAsset[] }) {
+function VisualReferenceGrid({ assets }: { assets: WardrobeImageAsset[] }) {
   return (
     <div className="visualReferenceGrid">
       {assets.map((asset) => (
@@ -227,7 +228,7 @@ export default function Home() {
     [photo, form.age, form.sex, form.height, isLoading],
   );
   const selectedVisualAssets = useMemo(
-    () => (analysis ? getStaticVisualAssetsForAnalysis(analysis, 12) : []),
+    () => (analysis ? getWardrobeAssetsForAnalysis(analysis, 16) : []),
     [analysis],
   );
 
@@ -478,16 +479,6 @@ export default function Home() {
                 placeholder="Ex.: trabalho presencial, eventos, dia a dia casual..."
                 rows={3}
                 value={form.routine}
-              />
-            </label>
-
-            <label>
-              Ocasiões que quer cobrir
-              <textarea
-                onChange={(event) => updateField("occasionNeeds", event.target.value)}
-                placeholder="Ex.: praia, casamento, trabalho, neve, igreja, faculdade, viagem, casa..."
-                rows={3}
-                value={form.occasionNeeds}
               />
             </label>
 
@@ -758,7 +749,7 @@ export default function Home() {
                 <TagList items={analysis.roupas.pecas_chave} />
                 <div className="lookGrid">
                   {analysis.roupas.looks_recomendados.map((look) => {
-                    const asset = getAssetById(pickAssetForOccasion(look.ocasiao));
+                    const asset = itemToImageAsset(getFallbackItemForOccasion(look.ocasiao));
 
                     return (
                       <div className="lookItem" key={look.ocasiao}>
@@ -777,24 +768,34 @@ export default function Home() {
               <ReportSection icon={<BadgeCheck size={20} aria-hidden />} title="Sugestoes por ocasiao">
                 <div className="occasionGrid">
                   {analysis.roupas.ocasioes_especificas.map((occasion) => {
-                    const asset = getAssetById(occasion.asset_id);
+                    const pieces = getWardrobeItemsByIds(
+                      occasion.pecas,
+                      occasion.ocasiao,
+                      4,
+                    ).map(itemToImageAsset);
 
                     return (
                       <article className="occasionCard" key={occasion.ocasiao}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={asset.src} alt={asset.alt} loading="lazy" />
-                        <div>
-                          <span>{occasion.intencao}</span>
+                        <div className="occasionImages">
+                          {pieces.map((piece) => (
+                            <figure className="wardrobePiece" key={piece.id}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={piece.src} alt={piece.alt} loading="lazy" />
+                              <figcaption>
+                                <strong>{piece.title}</strong>
+                                <small>{piece.fallback ? "Fallback visual" : piece.caption}</small>
+                              </figcaption>
+                            </figure>
+                          ))}
+                        </div>
+                        <div className="occasionText">
+                          <span>{occasion.objetivo_visual}</span>
                           <h3>{occasion.ocasiao}</h3>
-                          <p>{occasion.look}</p>
-                          <h4>Pecas-chave</h4>
-                          <TagList items={occasion.pecas_chave} />
-                          <h4>Cores</h4>
-                          <TagList items={occasion.cores} />
-                          <h4>Acessorios</h4>
-                          <TagList items={occasion.acessorios} />
-                          <h4>Maquiagem e cabelo</h4>
-                          <p>{occasion.maquiagem_cabelo}</p>
+                          <p>{occasion.look_completo}</p>
+                          <h4>Por que essas pecas</h4>
+                          <p>{occasion.motivo_da_escolha}</p>
+                          <h4>Cores usadas</h4>
+                          <TagList items={occasion.cores_usadas} />
                           <h4>Evitar ou adaptar</h4>
                           <TagList items={occasion.evitar_ou_adaptar} />
                         </div>

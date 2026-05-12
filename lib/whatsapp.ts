@@ -186,10 +186,17 @@ export async function sendPublicImageAsset({
 
   const filePath = path.join(process.cwd(), "public", cleanSrc);
   const buffer = await readFile(filePath);
+  const extension = path.extname(cleanSrc).toLowerCase();
+  const mimeType =
+    extension === ".jpg" || extension === ".jpeg"
+      ? "image/jpeg"
+      : extension === ".webp"
+        ? "image/webp"
+        : "image/png";
   const mediaId = await uploadWhatsAppMedia({
     buffer,
     filename: path.basename(cleanSrc),
-    mimeType: "image/png",
+    mimeType,
   });
 
   await sendWhatsAppImageById({

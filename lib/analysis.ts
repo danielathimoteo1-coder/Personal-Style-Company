@@ -1,4 +1,9 @@
-import { VISUAL_ASSET_IDS, type VisualAssetId } from "@/lib/style-assets";
+import {
+  WARDROBE_ITEM_IDS,
+  WARDROBE_OCCASIONS,
+  sanitizeWardrobeIds,
+  type WardrobeItemId,
+} from "@/lib/wardrobe";
 
 export type ColorRecommendation = {
   nome: string;
@@ -19,14 +24,12 @@ export type ShoppingPriority = {
 
 export type OccasionRecommendation = {
   ocasiao: string;
-  intencao: string;
-  look: string;
-  pecas_chave: string[];
-  cores: string[];
-  acessorios: string[];
-  maquiagem_cabelo: string;
+  objetivo_visual: string;
+  look_completo: string;
+  pecas: WardrobeItemId[];
+  motivo_da_escolha: string;
+  cores_usadas: string[];
   evitar_ou_adaptar: string[];
-  asset_id: VisualAssetId;
 };
 
 export type IllustrationRecommendation = {
@@ -155,41 +158,39 @@ const shoppingSchema = {
 const occasionSchema = {
   type: "object",
   properties: {
-    ocasiao: { type: "string" },
-    intencao: { type: "string" },
-    look: { type: "string" },
-    pecas_chave: {
+    ocasiao: {
+      type: "string",
+      enum: WARDROBE_OCCASIONS,
+    },
+    objetivo_visual: { type: "string" },
+    look_completo: { type: "string" },
+    pecas: {
+      type: "array",
+      minItems: 2,
+      maxItems: 4,
+      items: {
+        type: "string",
+        enum: WARDROBE_ITEM_IDS,
+      },
+    },
+    motivo_da_escolha: { type: "string" },
+    cores_usadas: {
       type: "array",
       items: { type: "string" },
     },
-    cores: {
-      type: "array",
-      items: { type: "string" },
-    },
-    acessorios: {
-      type: "array",
-      items: { type: "string" },
-    },
-    maquiagem_cabelo: { type: "string" },
     evitar_ou_adaptar: {
       type: "array",
       items: { type: "string" },
     },
-    asset_id: {
-      type: "string",
-      enum: VISUAL_ASSET_IDS,
-    },
   },
   required: [
     "ocasiao",
-    "intencao",
-    "look",
-    "pecas_chave",
-    "cores",
-    "acessorios",
-    "maquiagem_cabelo",
+    "objetivo_visual",
+    "look_completo",
+    "pecas",
+    "motivo_da_escolha",
+    "cores_usadas",
     "evitar_ou_adaptar",
-    "asset_id",
   ],
   additionalProperties: false,
 };
@@ -241,7 +242,7 @@ export const analysisJsonSchema = {
         "formato_rosto",
         "linhas_visuais",
         "observacoes",
-        "limites_da_foto"
+        "limites_da_foto",
       ],
       additionalProperties: false,
     },
@@ -273,7 +274,7 @@ export const analysisJsonSchema = {
         "cores_principais",
         "neutros",
         "cores_para_evitar",
-        "combinacoes"
+        "combinacoes",
       ],
       additionalProperties: false,
     },
@@ -299,7 +300,8 @@ export const analysisJsonSchema = {
         },
         ocasioes_especificas: {
           type: "array",
-          minItems: 8,
+          minItems: 12,
+          maxItems: 12,
           items: occasionSchema,
         },
         evitar_ou_adaptar: {
@@ -314,7 +316,7 @@ export const analysisJsonSchema = {
         "pecas_chave",
         "looks_recomendados",
         "ocasioes_especificas",
-        "evitar_ou_adaptar"
+        "evitar_ou_adaptar",
       ],
       additionalProperties: false,
     },
@@ -395,7 +397,7 @@ export const analysisJsonSchema = {
         "maquiagem",
         "acessorios",
         "compras",
-        "proximos_passos"
+        "proximos_passos",
       ],
       additionalProperties: false,
     },
@@ -409,10 +411,31 @@ export const analysisJsonSchema = {
     "acessorios",
     "compras",
     "proximos_passos",
-    "imagens"
+    "imagens",
   ],
   additionalProperties: false,
 };
+
+function demoOccasion(
+  ocasiao: (typeof WARDROBE_OCCASIONS)[number],
+  objetivo_visual: string,
+  look_completo: string,
+  cores_usadas: string[],
+): OccasionRecommendation {
+  return {
+    ocasiao,
+    objetivo_visual,
+    look_completo,
+    pecas: sanitizeWardrobeIds(undefined, ocasiao, 4) as WardrobeItemId[],
+    motivo_da_escolha:
+      "Selecao demonstrativa feita com o catalogo visual disponivel. Quando voces adicionarem fotos reais, a Ellie passa a escolher pecas especificas desse guarda-roupa.",
+    cores_usadas,
+    evitar_ou_adaptar: [
+      "Ajustar caimento, barra e cobertura ao conforto da pessoa.",
+      "Evitar excesso de informacao quando o ambiente pedir sobriedade.",
+    ],
+  };
+}
 
 export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
   const height = profile.height ? `${profile.height} cm` : "altura informada";
@@ -422,7 +445,7 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
     metadata: {
       modo: "demo",
       aviso:
-        "Modo demonstrativo: configure OPENAI_API_KEY em .env.local para analisar a foto de verdade. Este exemplo usa recomendações genéricas.",
+        "Modo demonstrativo: configure OPENAI_API_KEY em .env.local para analisar a foto de verdade. Este exemplo usa recomendacoes genericas e o fallback visual do guarda-roupa.",
       confianca: "Baixa para foto, media para estrutura do relatorio",
       resumo: `Perfil com ${profile.age || "idade informada"}, ${height}, buscando ${goal}.`,
     },
@@ -449,7 +472,7 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
         { nome: "Azul petroleo", hex: "#0F5B68", uso: "Blazers, camisas e vestidos" },
         { nome: "Verde oliva", hex: "#66734D", uso: "Calcas, jaquetas e malhas" },
         { nome: "Vinho suave", hex: "#8A3048", uso: "Batom, blusas e detalhes" },
-        { nome: "Rosa queimado", hex: "#C7797D", uso: "Blusas, blush e lenços" },
+        { nome: "Rosa queimado", hex: "#C7797D", uso: "Blusas, blush e lencos" },
       ],
       neutros: [
         { nome: "Marfim", hex: "#F2E9DA", uso: "Camisas e pontos de luz" },
@@ -476,12 +499,7 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
         "Camisas com gola aberta ou decote discreto em V",
         "Vestidos midi com estrutura suave",
       ],
-      tecidos: [
-        "Viscose encorpada",
-        "Linho misto",
-        "Crepe",
-        "Malha premium",
-      ],
+      tecidos: ["Viscose encorpada", "Linho misto", "Crepe", "Malha premium"],
       pecas_chave: [
         "Blazer neutro",
         "Camisa clara",
@@ -504,94 +522,55 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
         },
       ],
       ocasioes_especificas: [
-        {
-          ocasiao: "Trabalho",
-          intencao: "Transmitir competencia sem rigidez excessiva.",
-          look: "Calca reta, camisa clara, blazer azul petroleo e sapato fechado confortavel.",
-          pecas_chave: ["Blazer", "Camisa clara", "Calca de alfaiataria", "Sapato fechado"],
-          cores: ["Azul petroleo", "Marfim", "Cinza medio"],
-          acessorios: ["Brinco pequeno", "Bolsa estruturada", "Relogio discreto"],
-          maquiagem_cabelo: "Pele natural, sobrancelha penteada e batom neutro rosado.",
-          evitar_ou_adaptar: ["Tecidos transparentes", "Barras sem ajuste", "Excesso de brilho"],
-          asset_id: "work-tailoring",
-        },
-        {
-          ocasiao: "Praia",
-          intencao: "Ficar confortavel, fresca e visualmente coordenada.",
-          look: "Saida leve, chapeu ou viseira, oculos de sol e sandalia pratica.",
-          pecas_chave: ["Saida de praia", "Biquini ou maio na paleta", "Sandalia", "Bolsa leve"],
-          cores: ["Marfim", "Verde oliva", "Rosa queimado"],
-          acessorios: ["Oculos de sol", "Chapeu", "Bolsa de palha ou tecido"],
-          maquiagem_cabelo: "Protetor com cor, lip balm e cabelo preso com acabamento simples.",
-          evitar_ou_adaptar: ["Tecidos pesados", "Metais que esquentam muito", "Cores neon perto do rosto"],
-          asset_id: "beach-light",
-        },
-        {
-          ocasiao: "Casamento",
-          intencao: "Ficar elegante respeitando horario e local da cerimonia.",
-          look: "Vestido midi ou conjunto fluido em cor da paleta, sandalia delicada e clutch.",
-          pecas_chave: ["Vestido midi", "Conjunto fluido", "Clutch", "Sandalia delicada"],
-          cores: ["Vinho suave", "Rosa queimado", "Azul petroleo"],
-          acessorios: ["Brinco medio", "Clutch", "Metal dourado claro"],
-          maquiagem_cabelo: "Pele luminosa, olhos suaves e batom com presenca controlada.",
-          evitar_ou_adaptar: ["Branco total", "Preto muito pesado de dia", "Tecidos casuais demais"],
-          asset_id: "wedding-guest",
-        },
-        {
-          ocasiao: "Frio intenso ou neve",
-          intencao: "Manter aquecimento sem perder proporcao visual.",
-          look: "Camadas termicas, tricot fino, casaco estruturado e bota de sola segura.",
-          pecas_chave: ["Casaco estruturado", "Tricot", "Cachecol", "Bota"],
-          cores: ["Cinza medio", "Chocolate", "Vinho suave"],
-          acessorios: ["Cachecol", "Luvas", "Gorro em cor coordenada"],
-          maquiagem_cabelo: "Pele hidratada, blush cremoso e batom hidratante com cor.",
-          evitar_ou_adaptar: ["Volume sem cintura", "Tecidos que molham facil", "Sapato escorregadio"],
-          asset_id: "snow-layering",
-        },
-        {
-          ocasiao: "Igreja ou cerimonia discreta",
-          intencao: "Criar presenca respeitosa, elegante e confortavel.",
-          look: "Saia midi ou calca ampla, blusa com boa cobertura e terceira peca leve.",
-          pecas_chave: ["Saia midi", "Calca ampla", "Blusa estruturada", "Cardigan ou blazer leve"],
-          cores: ["Marfim", "Verde oliva", "Chocolate"],
-          acessorios: ["Brinco pequeno", "Bolsa media", "Sapato fechado ou sandalia discreta"],
-          maquiagem_cabelo: "Maquiagem natural e cabelo alinhado, sem excesso de brilho.",
-          evitar_ou_adaptar: ["Decotes profundos se a pessoa preferir discricao", "Comprimentos desconfortaveis"],
-          asset_id: "church-elegant",
-        },
-        {
-          ocasiao: "Faculdade",
-          intencao: "Unir conforto para muitas horas com identidade visual.",
-          look: "Jeans reto, camiseta ou camisa leve, terceira peca fina e tenis limpo.",
-          pecas_chave: ["Jeans reto", "Camiseta boa", "Camisa leve", "Tenis"],
-          cores: ["Azul petroleo", "Marfim", "Verde oliva"],
-          acessorios: ["Mochila ou tote", "Oculos", "Brinco pequeno"],
-          maquiagem_cabelo: "Beleza rapida: protetor, blush leve e mascara se desejar.",
-          evitar_ou_adaptar: ["Bolsa pesada demais", "Sapatos desconfortaveis", "Tecidos que amassam muito"],
-          asset_id: "college-casual",
-        },
-        {
-          ocasiao: "Casa e home office",
-          intencao: "Ficar confortavel sem perder a sensacao de estar pronta.",
-          look: "Malha boa, calca confortavel de corte limpo e cardigan leve.",
-          pecas_chave: ["Malha premium", "Calca confortavel", "Cardigan", "Flat ou mule"],
-          cores: ["Rosa queimado", "Marfim", "Chocolate"],
-          acessorios: ["Argola pequena", "Presilha", "Oculos de grau se usar"],
-          maquiagem_cabelo: "Pele hidratada, lip balm e cabelo preso com acabamento.",
-          evitar_ou_adaptar: ["Pecas deformadas", "Pijama em videochamada", "Cores que apagam no video"],
-          asset_id: "home-comfort",
-        },
-        {
-          ocasiao: "Viagem",
-          intencao: "Montar mala versatil com repeticao inteligente.",
-          look: "Camadas leves, base neutra, tenis confortavel e uma cor de destaque.",
-          pecas_chave: ["Calca confortavel", "Jaqueta leve", "Tenis", "Bolsa transversal"],
-          cores: ["Cinza medio", "Marfim", "Azul petroleo"],
-          acessorios: ["Bolsa transversal", "Oculos de sol", "Lenço"],
-          maquiagem_cabelo: "Kit minimo: protetor, blush, mascara e batom versatil.",
-          evitar_ou_adaptar: ["Pecas que so combinam uma vez", "Sapato novo", "Tecidos muito delicados"],
-          asset_id: "travel-capsule",
-        },
+        demoOccasion("Praia", "Frescor coordenado", "Saida leve, oculos de sol, sandalia pratica e bolsa de praia.", [
+          "Marfim",
+          "Verde oliva",
+          "Rosa queimado",
+        ]),
+        demoOccasion("Faculdade", "Conforto com identidade", "Jeans reto, camiseta boa, camisa leve aberta e tenis limpo.", [
+          "Azul petroleo",
+          "Marfim",
+        ]),
+        demoOccasion("Casamento", "Elegancia social", "Vestido midi ou conjunto fluido, sandalia delicada e clutch.", [
+          "Vinho suave",
+          "Rosa queimado",
+        ]),
+        demoOccasion("Trabalho formal", "Competencia sem rigidez", "Alfaiataria, camisa clara, blazer e sapato fechado confortavel.", [
+          "Cinza medio",
+          "Azul petroleo",
+        ]),
+        demoOccasion("Trabalho informal", "Profissional leve", "Calca confortavel, malha premium, terceira peca leve e loafer.", [
+          "Verde oliva",
+          "Chocolate",
+        ]),
+        demoOccasion("Passeio casual", "Leveza polida", "Jeans escuro, blusa com bom tecido, cinto e bolsa transversal.", [
+          "Marfim",
+          "Chocolate",
+        ]),
+        demoOccasion("Evento noturno", "Presenca controlada", "Base escura, textura acetinada, brilho pontual e batom assinatura.", [
+          "Vinho suave",
+          "Preto adaptado",
+        ]),
+        demoOccasion("Igreja/cerimonia discreta", "Sobriedade elegante", "Saia midi ou calca ampla, blusa com cobertura e terceira peca leve.", [
+          "Marfim",
+          "Verde oliva",
+        ]),
+        demoOccasion("Dias frios", "Camadas proporcionais", "Tricot fino, casaco estruturado, cachecol e bota de sola segura.", [
+          "Chocolate",
+          "Cinza medio",
+        ]),
+        demoOccasion("Dias quentes", "Respirar sem perder forma", "Linho misto, regata estruturada, saia ou short de alfaiataria e rasteira.", [
+          "Marfim",
+          "Rosa queimado",
+        ]),
+        demoOccasion("Viagem", "Mala inteligente", "Base neutra, camada leve, tenis confortavel e acessorios que repetem bem.", [
+          "Cinza medio",
+          "Azul petroleo",
+        ]),
+        demoOccasion("Casa/home office", "Conforto apresentavel", "Malha boa, calca confortavel de corte limpo e cardigan leve.", [
+          "Rosa queimado",
+          "Marfim",
+        ]),
       ],
       evitar_ou_adaptar: [
         "Tecidos finos demais quando a intencao for imagem profissional",
@@ -610,39 +589,16 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
         "Mascara de cilios para definir sem pesar",
         "Delineado esfumado em vez de traco muito grafico",
       ],
-      labios: [
-        "Nude rosado",
-        "Vinho suave",
-        "Terracota equilibrado",
-      ],
+      labios: ["Nude rosado", "Vinho suave", "Terracota equilibrado"],
       intensidade: "Media, ajustando para rotina e ocasiao",
-      produtos_chave: [
-        "Corretivo pontual",
-        "Blush cremoso",
-        "Mascara de cilios",
-        "Batom versatil",
-      ],
+      produtos_chave: ["Corretivo pontual", "Blush cremoso", "Mascara de cilios", "Batom versatil"],
     },
     acessorios: {
       metais: ["Dourado claro", "Prata envelhecida", "Mistura de metais em pecas pequenas"],
-      oculos: [
-        "Armacoes medias, com linhas levemente ascendentes",
-        "Cores tartaruga, vinho escuro ou grafite",
-      ],
-      joias: [
-        "Argolas medias",
-        "Colares curtos para iluminar o rosto",
-        "Pulseiras finas em composicao",
-      ],
-      bolsas_e_cintos: [
-        "Couro chocolate",
-        "Estruturas medias",
-        "Fivelas discretas para uso recorrente",
-      ],
-      cabelo: [
-        "Manter contraste coerente com sobrancelhas e pele",
-        "Evitar mudancas radicais de cor sem teste de mechas",
-      ],
+      oculos: ["Armacoes medias, com linhas levemente ascendentes", "Cores tartaruga, vinho escuro ou grafite"],
+      joias: ["Argolas medias", "Colares curtos para iluminar o rosto", "Pulseiras finas em composicao"],
+      bolsas_e_cintos: ["Couro chocolate", "Estruturas medias", "Fivelas discretas para uso recorrente"],
+      cabelo: ["Manter contraste coerente com sobrancelhas e pele", "Evitar mudancas radicais de cor sem teste"],
     },
     compras: [
       {
@@ -663,13 +619,13 @@ export function buildDemoAnalysis(profile: ClientProfile): AnalysisResult {
       {
         prioridade: "Media",
         item: "Cinto e sapato coordenados",
-        motivo: "Dá acabamento ao look sem excesso de informacao.",
+        motivo: "Da acabamento ao look sem excesso de informacao.",
       },
     ],
     proximos_passos: [
       "Enviar foto frontal com luz natural e fundo simples.",
       "Adicionar duas fotos de corpo inteiro para melhorar recomendacoes de caimento.",
-      "Responder preferencias de estilo, rotina e restricoes de compra.",
+      "Colocar fotos reais em public/wardrobe e rodar npm run generate:wardrobe-catalog.",
       "Validar paleta com tecidos reais perto do rosto.",
     ],
     imagens: {
