@@ -26,3 +26,23 @@ npm run generate:wardrobe-catalog
 ```
 
 O sistema copia tudo para a pasta publica do site e atualiza o mapa que a Ellie usa para escolher as pecas.
+
+## Atalho simples
+
+Eu ja deixei subpastas basicas criadas com este formato:
+
+```text
+categoria/subcategoria/variado/geral/
+```
+
+Se voce ainda nao quiser separar por cor e modelagem, pode colocar as fotos direto nessas pastas. Exemplo:
+
+```text
+imagens/vestidos/vestidos-longos/variado/geral/meu-vestido-001.jpg
+```
+
+Quando quiser mais precisao, crie cores e modelagens especificas no mesmo lugar:
+
+```text
+imagens/vestidos/vestidos-longos/vinho/tomara-que-caia/meu-vestido-001.jpg
+```
