@@ -18,7 +18,6 @@ import {
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { AnalysisResult, ColorRecommendation } from "@/lib/analysis";
-import { buildPaletteDataUrl } from "@/lib/palette-card";
 import {
   getFallbackItemForOccasion,
   getWardrobeAssetsForAnalysis,
@@ -124,21 +123,80 @@ function ColorStrip({ colors }: { colors: ColorRecommendation[] }) {
   );
 }
 
-function PalettePoster({ analysis }: { analysis: AnalysisResult }) {
-  const paletteImageUrl = buildPaletteDataUrl(analysis);
+function PaletteSwatchCard({
+  color,
+  avoid = false,
+}: {
+  color: ColorRecommendation;
+  avoid?: boolean;
+}) {
+  const safeHex = /^#[0-9a-f]{6}$/i.test(color.hex) ? color.hex.toUpperCase() : "#8A3048";
 
   return (
-    <figure className="palettePoster">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={paletteImageUrl} alt={`Cartela visual ${analysis.paleta.nome}`} />
-      <figcaption>
-        <strong>Cartela visual gerada localmente</strong>
-        <span>Sem custo de IA de imagem: a arte usa os hexadecimais retornados na analise.</span>
-        <a download="cartela-de-cores.svg" href={paletteImageUrl}>
-          Baixar cartela
-        </a>
-      </figcaption>
-    </figure>
+    <article className={`paletteSwatchCard${avoid ? " avoid" : ""}`}>
+      <span
+        aria-hidden="true"
+        className="paletteSwatchPreview"
+        style={{ backgroundColor: safeHex }}
+      />
+      <div>
+        <strong>{color.nome}</strong>
+        <code>{safeHex}</code>
+        <small>{color.uso}</small>
+      </div>
+    </article>
+  );
+}
+
+function PaletteSwatchGroup({
+  title,
+  colors,
+  avoid = false,
+}: {
+  title: string;
+  colors: ColorRecommendation[];
+  avoid?: boolean;
+}) {
+  if (!colors.length) {
+    return null;
+  }
+
+  return (
+    <section className="paletteBlock">
+      <h3>{title}</h3>
+      <div className="paletteSwatchGrid">
+        {colors.map((color, index) => (
+          <PaletteSwatchCard
+            avoid={avoid}
+            color={color}
+            key={`${color.nome}-${color.hex}-${index}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PalettePoster({ analysis }: { analysis: AnalysisResult }) {
+  return (
+    <section aria-label={`Cartela visual ${analysis.paleta.nome}`} className="palettePoster">
+      <header className="palettePosterHeader">
+        <span>Cartela visual</span>
+        <h2>{analysis.paleta.nome}</h2>
+        <p>{analysis.paleta.descricao}</p>
+      </header>
+
+      <PaletteSwatchGroup
+        colors={analysis.paleta.cores_principais}
+        title="Cores que mais combinam"
+      />
+      <PaletteSwatchGroup colors={analysis.paleta.neutros} title="Neutros de base" />
+      <PaletteSwatchGroup
+        avoid
+        colors={analysis.paleta.cores_para_evitar}
+        title="Cores para evitar perto do rosto ou adaptar"
+      />
+    </section>
   );
 }
 
@@ -790,17 +848,6 @@ export default function Home() {
 
                     return (
                       <article className="occasionCard" key={occasion.ocasiao}>
-                        <div className="occasionImages">
-                          {pieces.map((piece) => (
-                            <figure className="wardrobePiece" key={piece.id}>
-                              <WardrobeAssetImages asset={piece} />
-                              <figcaption>
-                                <strong>{piece.title}</strong>
-                                <small>{piece.fallback ? "Fallback visual" : piece.caption}</small>
-                              </figcaption>
-                            </figure>
-                          ))}
-                        </div>
                         <div className="occasionText">
                           <span>{occasion.objetivo_visual}</span>
                           <h3>{occasion.ocasiao}</h3>
@@ -811,6 +858,20 @@ export default function Home() {
                           <TagList items={occasion.cores_usadas} />
                           <h4>Evitar ou adaptar</h4>
                           <TagList items={occasion.evitar_ou_adaptar} />
+                        </div>
+                        <div
+                          aria-label={`Pecas indicadas para ${occasion.ocasiao}`}
+                          className="occasionImages"
+                        >
+                          {pieces.map((piece) => (
+                            <figure className="wardrobePiece" key={piece.id}>
+                              <WardrobeAssetImages asset={piece} />
+                              <figcaption>
+                                <strong>{piece.title}</strong>
+                                <small>{piece.fallback ? "Fallback visual" : piece.caption}</small>
+                              </figcaption>
+                            </figure>
+                          ))}
                         </div>
                       </article>
                     );
