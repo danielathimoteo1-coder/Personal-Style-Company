@@ -2,6 +2,2002 @@ import type { WardrobeItem } from "@/lib/wardrobe";
 
 export const generatedWardrobeCatalog = [
   {
+    "id": "wardrobe_blusas-e-camisas-blusa-boho",
+    "titulo": "Blusa Boho",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Boho",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-boho"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_boho.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_boho_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-cachecoeur-salmao",
+    "titulo": "Blusa Cachecoeur Salmao",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Cachecoeur Salmao",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-cachecoeur-salmao"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_cachecoeur_salmao.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_cachecoeur_salmao_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-de-alcinha-preta",
+    "titulo": "Blusa De Alcinha Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa De Alcinha Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-de-alcinha-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_de_alcinha_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_de_alcinha_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-de-um-ombro-so-com-manga-bufante",
+    "titulo": "Blusa De Um Ombro So Com Manga Bufante",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa De Um Ombro So Com Manga Bufante",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-de-um-ombro-so-com-manga-bufante"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/Blusa_de_um_ombro_so_com manga_bufante.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/Blusa_de_um_ombro_so_com manga_bufante_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-estampada-florida",
+    "titulo": "Blusa Estampada Florida",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Estampada Florida",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-estampada-florida"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_estampada_florida.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_estampada_florida_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-frente-unica-preta",
+    "titulo": "Blusa Frente Unica Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Frente Unica Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-frente-unica-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_frente_unica_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_frente_unica_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-gola-alta-cor-de-pele",
+    "titulo": "Blusa Gola Alta Cor De Pele",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Gola Alta Cor De Pele",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-gola-alta-cor-de-pele"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_gola_alta_cor_de_pele.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_gola_alta_cor_de_pele_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-gola-alta-sem-manga-preta",
+    "titulo": "Blusa Gola Alta Sem Manga Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Gola Alta Sem Manga Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-gola-alta-sem-manga-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_gola_alta_sem_manga_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_gola_alta_sem_manga_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-laco",
+    "titulo": "Blusa Laco",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Laco",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-laco"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_laco.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_laco_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-manga-bufante-com-decote-em-v-preta",
+    "titulo": "Blusa Manga Bufante Com Decote Em V Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Manga Bufante Com Decote Em V Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-manga-bufante-com-decote-em-v-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_manga_bufante_com_decote_em_v_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_manga_bufante_com_decote_em_v_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-manga-bufante-rosa",
+    "titulo": "Blusa Manga Bufante Rosa",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Manga Bufante Rosa",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-manga-bufante-rosa"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_manga_bufante_rosa.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_manga_bufante_rosa_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-manga-longa-branca",
+    "titulo": "Blusa Manga Longa Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Manga Longa Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-manga-longa-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_manga_longa_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_manga_longa_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-ombro-a-ombro-com-manga-bufante-branca",
+    "titulo": "Blusa Ombro A Ombro Com Manga Bufante Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Ombro A Ombro Com Manga Bufante Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-ombro-a-ombro-com-manga-bufante-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_ombro_a_ombro_com_manga_bufante_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_ombro_a_ombro_com_manga_bufante_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-ombro-a-ombro-verde-musgo",
+    "titulo": "Blusa Ombro A Ombro Verde Musgo",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Ombro A Ombro Verde Musgo",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-ombro-a-ombro-verde-musgo"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_ombro_a_ombro_verde_musgo.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_ombro_a_ombro_verde_musgo_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-peplum-com-manga-bufante-branca",
+    "titulo": "Blusa Peplum Com Manga Bufante Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Peplum Com Manga Bufante Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-peplum-com-manga-bufante-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_peplum_com_manga_bufante_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_peplum_com_manga_bufante_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-regata-branca",
+    "titulo": "Blusa Regata Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Regata Branca",
+    "ocasioes": [
+      "Trabalho formal",
+      "Dias quentes"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "calor",
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-regata-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_regata_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_regata_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-renda-branca",
+    "titulo": "Blusa Renda Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Renda Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-renda-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_renda_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_renda_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-transparente-preta",
+    "titulo": "Blusa Transparente Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Transparente Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-transparente-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_transparente_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_transparente_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-transpassada-branca",
+    "titulo": "Blusa Transpassada Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Transpassada Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-transpassada-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_transpassada_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_transpassada_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-blusa-um-ombro-so-azul-bebe",
+    "titulo": "Blusa Um Ombro So Azul Bebe",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Blusa Um Ombro So Azul Bebe",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "blusa-um-ombro-so-azul-bebe"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/blusa_um_ombro_so_azul_bebe.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/blusa_um_ombro_so_azul_bebe_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-camisa-jeans-azul",
+    "titulo": "Camisa Jeans Azul",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Camisa Jeans Azul",
+    "ocasioes": [
+      "Trabalho formal",
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "camisa-jeans-azul"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/camisa_jeans_azul.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/camisa_jeans_azul_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-camisa-polo-preta",
+    "titulo": "Camisa Polo Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Camisa Polo Preta",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "camisa-polo-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/camisa_polo_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/camisa_polo_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-camisa-social-azul-clara",
+    "titulo": "Camisa Social Azul Clara",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Camisa Social Azul Clara",
+    "ocasioes": [
+      "Casamento",
+      "Evento noturno",
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "social",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "camisa-social-azul-clara"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/camisa_social_azul_clara.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/camisa_social_azul_clara_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-camisa-social-oversized-branca",
+    "titulo": "Camisa Social Oversized Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Camisa Social Oversized Branca",
+    "ocasioes": [
+      "Casamento",
+      "Evento noturno",
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "social",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "camisa-social-oversized-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/camisa_social_oversized_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/camisa_social_oversized_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-camiseta-preta",
+    "titulo": "Camiseta Preta",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Camiseta Preta",
+    "ocasioes": [
+      "Trabalho formal",
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "camiseta-preta"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/camiseta_preta.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/camiseta_preta_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-corset-cropped-preto-com-manga-bufante-preto",
+    "titulo": "Corset Cropped Preto Com Manga Bufante Preto",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Corset Cropped Preto Com Manga Bufante Preto",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "corset-cropped-preto-com-manga-bufante-preto"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/Corset_cropped_preto_com_manga_bufante_preto.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/Corset_cropped_preto_com_manga_bufante_preto_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-cropped-ciganinha-listrado-com-manga-bufante-branco-e-preto",
+    "titulo": "Cropped Ciganinha Listrado Com Manga Bufante Branco E Preto",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Cropped Ciganinha Listrado Com Manga Bufante Branco E Preto",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "cropped-ciganinha-listrado-com-manga-bufante-branco-e-preto"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/cropped_ciganinha_listrado_com_manga_bufante_branco_e_preto.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/cropped_ciganinha_listrado_com_manga_bufante_branco_e_preto_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-cropped-ciganinha-tie-dye-com-manga-bufante-azul-e-branca",
+    "titulo": "Cropped Ciganinha Tie Dye Com Manga Bufante Azul E Branca",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Cropped Ciganinha Tie Dye Com Manga Bufante Azul E Branca",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "cropped-ciganinha-tie-dye-com-manga-bufante-azul-e-branca"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/cropped_ciganinha_tie-dye_com_manga_bufante_azul_e_branca.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/cropped_ciganinha_tie-dye_com_manga_bufante_azul_e_branca_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-cropped-com-no-frontal-rosa",
+    "titulo": "Cropped Com No Frontal Rosa",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Cropped Com No Frontal Rosa",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "cropped-com-no-frontal-rosa"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/cropped_com_no_frontal_rosa.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/cropped_com_no_frontal_rosa_modelo.png"
+  },
+  {
+    "id": "wardrobe_blusas-e-camisas-kimono-verde-claro",
+    "titulo": "Kimono Verde Claro",
+    "categoria": "blusas-e-camisas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Kimono Verde Claro",
+    "ocasioes": [
+      "Trabalho formal"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "formal",
+    "clima": [
+      "ar-condicionado"
+    ],
+    "tags": [
+      "blusas-e-camisas",
+      "kimono-verde-claro"
+    ],
+    "src": "/wardrobe/items/blusas-e-camisas/kimono_verde_claro.png",
+    "modeloSrc": "/wardrobe/items/blusas-e-camisas/kimono_verde_claro_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-cargo",
+    "titulo": "Calca Cargo",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Cargo",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-cargo"
+    ],
+    "src": "/wardrobe/items/calcas/calca_cargo.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_cargo_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-clochard",
+    "titulo": "Calca Clochard",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Clochard",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-clochard"
+    ],
+    "src": "/wardrobe/items/calcas/calca_clochard.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_clochard_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jeans-bootcut",
+    "titulo": "Calca Jeans Bootcut",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jeans Bootcut",
+    "ocasioes": [
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jeans-bootcut"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jeans_bootcut.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jeans_bootcut_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jeans-flare",
+    "titulo": "Calca Jeans Flare",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jeans Flare",
+    "ocasioes": [
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jeans-flare"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jeans_flare.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jeans_flare_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jeans-mom",
+    "titulo": "Calca Jeans Mom",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jeans Mom",
+    "ocasioes": [
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jeans-mom"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jeans_mom.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jeans_mom_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jeans-reta",
+    "titulo": "Calca Jeans Reta",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jeans Reta",
+    "ocasioes": [
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jeans-reta"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jeans_reta.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jeans_reta_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jeans-skinny",
+    "titulo": "Calca Jeans Skinny",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jeans Skinny",
+    "ocasioes": [
+      "Trabalho informal",
+      "Passeio casual",
+      "Faculdade"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jeans-skinny"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jeans_skinny.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jeans_skinny_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-jogger",
+    "titulo": "Calca Jogger",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Jogger",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-jogger"
+    ],
+    "src": "/wardrobe/items/calcas/calca_jogger.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_jogger_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-legging",
+    "titulo": "Calca Legging",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Legging",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-legging"
+    ],
+    "src": "/wardrobe/items/calcas/calca_legging.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_legging_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-pantacourt",
+    "titulo": "Calca Pantacourt",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Pantacourt",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-pantacourt"
+    ],
+    "src": "/wardrobe/items/calcas/calca_pantacourt.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_pantacourt_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-pantalona",
+    "titulo": "Calca Pantalona",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Pantalona",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-pantalona"
+    ],
+    "src": "/wardrobe/items/calcas/calca_pantalona.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_pantalona_modelo.png"
+  },
+  {
+    "id": "wardrobe_calcas-calca-wide-leg",
+    "titulo": "Calca Wide Leg",
+    "categoria": "calcas",
+    "subcategoria": "geral",
+    "cor": "variado",
+    "modelagem": "Calca Wide Leg",
+    "ocasioes": [
+      "Passeio casual"
+    ],
+    "generos": [
+      "feminino",
+      "masculino",
+      "nao-binario",
+      "prefiro-nao-informar"
+    ],
+    "altura_recomendada": [
+      "baixa",
+      "media",
+      "alta"
+    ],
+    "tom_pele": [
+      "muito claro",
+      "claro",
+      "medio",
+      "moreno",
+      "escuro",
+      "retinto",
+      "oliva"
+    ],
+    "subtom": [
+      "quente",
+      "frio",
+      "neutro",
+      "oliva"
+    ],
+    "formalidade": "casual",
+    "clima": [
+      "ameno"
+    ],
+    "tags": [
+      "calcas",
+      "calca-wide-leg"
+    ],
+    "src": "/wardrobe/items/calcas/calca_wide_leg.png",
+    "modeloSrc": "/wardrobe/items/calcas/calca_wide_leg_modelo.png"
+  },
+  {
     "id": "wardrobe_calcas-flare-variado-geral-calca-jeans-flare",
     "titulo": "Calca Jeans Flare",
     "categoria": "calcas",
