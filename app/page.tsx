@@ -164,13 +164,27 @@ function IllustrationCard({
   );
 }
 
+function WardrobeAssetImages({ asset }: { asset: WardrobeImageAsset }) {
+  return (
+    <div className={`wardrobeImagePair${asset.modelSrc ? " hasModel" : ""}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={asset.src} alt={asset.alt} loading="lazy" />
+      {asset.modelSrc ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={asset.modelSrc} alt={`${asset.alt} na modelo`} loading="lazy" />
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 function VisualReferenceGrid({ assets }: { assets: WardrobeImageAsset[] }) {
   return (
     <div className="visualReferenceGrid">
       {assets.map((asset) => (
         <figure className="visualReferenceCard" key={asset.id}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={asset.src} alt={asset.alt} loading="lazy" />
+          <WardrobeAssetImages asset={asset} />
           <figcaption>
             <strong>{asset.title}</strong>
             <span>{asset.caption}</span>
@@ -779,8 +793,7 @@ export default function Home() {
                         <div className="occasionImages">
                           {pieces.map((piece) => (
                             <figure className="wardrobePiece" key={piece.id}>
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={piece.src} alt={piece.alt} loading="lazy" />
+                              <WardrobeAssetImages asset={piece} />
                               <figcaption>
                                 <strong>{piece.title}</strong>
                                 <small>{piece.fallback ? "Fallback visual" : piece.caption}</small>

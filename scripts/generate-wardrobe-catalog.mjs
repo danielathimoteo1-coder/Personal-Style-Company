@@ -144,6 +144,22 @@ function inferClimate(text) {
   return Array.from(result);
 }
 
+function isModelImagePath(filePath) {
+  const basename = path.basename(filePath, path.extname(filePath));
+  return /[_-]modelo$/i.test(basename);
+}
+
+function withoutModelSuffix(value) {
+  return value.replace(/[_-]modelo$/i, "");
+}
+
+function baseKeyForImage(filePath) {
+  const dir = path.dirname(filePath);
+  const ext = path.extname(filePath);
+  const basename = path.basename(filePath, ext);
+  return path.join(dir, withoutModelSuffix(basename));
+}
+
 async function walk(dir) {
   let entries = [];
   try {
@@ -174,14 +190,19 @@ async function readManifest() {
   }
 }
 
-function itemFromPath(filePath, manifest) {
+function itemFromPath(filePath, manifest, modelByBaseKey) {
   const relative = path.relative(sourceImagesDir, filePath).replaceAll(path.sep, "/");
   const parts = relative.split("/");
   const folders = parts.slice(0, -1);
   const filename = parts.at(-1) || "";
   const basename = filename.replace(/\.[^.]+$/, "");
-  const [categoria = "geral", subcategoria = "geral", cor = "variado", modelagem = "geral"] = folders;
-  const text = `${relative} ${basename}`;
+  const categoria = folders[0] || "geral";
+  const modelagem = titleCase(basename);
+  const modelPath = modelByBaseKey.get(baseKeyForImage(filePath));
+  const modelRelative = modelPath
+    ? path.relative(sourceImagesDir, modelPath).replaceAll(path.sep, "/")
+    : undefined;
+  const text = `${relative} ${basename} ${folders.join(" ")}`;
   const override = manifest.items?.[relative] || manifest.items?.[basename] || {};
   const defaults = manifest.defaults || {};
 
@@ -189,8 +210,8 @@ function itemFromPath(filePath, manifest) {
     id: override.id || `wardrobe_${slug(relative.replace(/\.[^.]+$/, ""))}`,
     titulo: override.titulo || titleCase(basename),
     categoria: override.categoria || categoria,
-    subcategoria: override.subcategoria || subcategoria,
-    cor: override.cor || cor,
+    subcategoria: override.subcategoria || "geral",
+    cor: override.cor || "variado",
     modelagem: override.modelagem || modelagem,
     ocasioes: override.ocasioes || inferOccasions(text),
     generos: override.generos || defaults.generos || defaultGeneros,
@@ -200,9 +221,10 @@ function itemFromPath(filePath, manifest) {
     formalidade: override.formalidade || inferFormality(text),
     clima: override.clima || inferClimate(text),
     tags: Array.from(
-      new Set([categoria, subcategoria, cor, modelagem, basename, ...(override.tags || [])].map(slug).filter(Boolean)),
+      new Set([categoria, ...folders.slice(1), basename, ...(override.tags || [])].map(slug).filter(Boolean)),
     ),
     src: `/wardrobe/items/${relative}`,
+    ...(modelRelative ? { modeloSrc: `/wardrobe/items/${modelRelative}` } : {}),
   };
 
   return item;
@@ -228,9 +250,13 @@ async function syncPublicImages(files) {
 
 const manifest = await readManifest();
 const files = await walk(sourceImagesDir);
+const modelByBaseKey = new Map(
+  files.filter(isModelImagePath).map((file) => [baseKeyForImage(file), file]),
+);
 
 const catalog = files
-  .map((file) => itemFromPath(file, manifest))
+  .filter((file) => !isModelImagePath(file))
+  .map((file) => itemFromPath(file, manifest, modelByBaseKey))
   .sort((a, b) => a.id.localeCompare(b.id));
 
 const duplicateIds = catalog

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run generate:wardrobe-catalog",
     "build": "next build",
     "generate:wardrobe-catalog": "node scripts/generate-wardrobe-catalog.mjs",
     "generate:style-assets": "node scripts/generate-style-assets.mjs",

@@ -33,6 +33,7 @@ export type WardrobeItem = {
   clima: readonly string[];
   tags: readonly string[];
   src: string;
+  modeloSrc?: string;
   fallback?: boolean;
 };
 
@@ -43,6 +44,7 @@ export type WardrobeImageAsset = {
   alt: string;
   caption: string;
   tags: readonly string[];
+  modelSrc?: string;
   fallback: boolean;
 };
 
@@ -507,13 +509,17 @@ export function sanitizeWardrobeIds(ids: string[] | undefined, occasion: string,
 }
 
 export function itemToImageAsset(item: WardrobeItem): WardrobeImageAsset {
+  const captionParts = [item.categoria, item.modelagem, item.cor]
+    .filter((part) => part && !["geral", "variado"].includes(normalizeText(part)));
+
   return {
     id: item.id,
     title: item.titulo,
     src: item.src,
-    alt: `${item.titulo} - ${item.categoria}, ${item.subcategoria}, ${item.cor}`,
-    caption: `${item.categoria} / ${item.subcategoria} / ${item.cor} / ${item.modelagem}`,
+    alt: `${item.titulo} - ${item.categoria}`,
+    caption: captionParts.join(" / ") || item.categoria,
     tags: item.tags,
+    modelSrc: item.modeloSrc,
     fallback: Boolean(item.fallback),
   };
 }
@@ -564,8 +570,6 @@ export function getWardrobeCatalogPrompt() {
     id: item.id,
     titulo: item.titulo,
     categoria: item.categoria,
-    subcategoria: item.subcategoria,
-    cor: item.cor,
     modelagem: item.modelagem,
     ocasioes: item.ocasioes,
     generos: item.generos,
@@ -575,6 +579,7 @@ export function getWardrobeCatalogPrompt() {
     formalidade: item.formalidade,
     clima: item.clima,
     tags: item.tags,
+    modelo_disponivel: Boolean(item.modeloSrc),
     fallback: Boolean(item.fallback),
   }));
 

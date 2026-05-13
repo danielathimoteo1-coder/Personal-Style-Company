@@ -332,13 +332,21 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
   await sendWhatsAppTextChunks(to, formatAnalysisForWhatsApp(analysis));
   await sendPaletteImage(to, analysis);
 
-  const visualAssets = getWardrobeAssetsForAnalysis(analysis, 8);
+  const visualAssets = getWardrobeAssetsForAnalysis(analysis, 6);
   for (const asset of visualAssets) {
     await sendPublicImageAsset({
       to,
       publicSrc: asset.src,
       caption: `${asset.title}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
     });
+
+    if (asset.modelSrc) {
+      await sendPublicImageAsset({
+        to,
+        publicSrc: asset.modelSrc,
+        caption: `${asset.title} na modelo\n${asset.caption}`,
+      });
+    }
   }
 }
 

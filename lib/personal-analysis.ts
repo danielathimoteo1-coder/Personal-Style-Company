@@ -62,6 +62,8 @@ Regras importantes:
 - Se a foto nao permitir alguma leitura, diga isso em limites_da_foto.
 - Use recomendacoes acionaveis: roupas, paleta, maquiagem, acessorios, compras e proximos passos.
 - A pessoa nao escolhe ocasiao. Sempre entregue o guia completo para todas as 12 ocasioes fixas.
+- O catalogo e organizado de forma simples: a categoria vem da pasta principal em imagens/ e o nome do arquivo e o nome da peca.
+- Quando um item tiver modelo_disponivel=true, o sistema tambem mostrara automaticamente a imagem da modelo usando a peca. Voce nao precisa criar outro ID para isso.
 - Em roupas.ocasioes_especificas, devolva exatamente 12 itens, um por ocasiao fixa, sem repetir ocasiao e na mesma ordem.
 - Para cada ocasiao, selecione de 2 a 4 IDs em pecas, usando somente IDs existentes no catalogo oficial acima.
 - Nunca invente caminhos, URLs, arquivos, nomes de imagem ou IDs.

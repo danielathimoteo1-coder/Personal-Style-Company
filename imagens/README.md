@@ -1,23 +1,32 @@
 # Imagens do guarda-roupa da Ellie
 
-Coloque todas as fotos reais nesta pasta, usando subpastas livres.
+Coloque as fotos reais nesta pasta usando apenas a categoria principal.
 
-Padrao recomendado:
+Padrao simples:
 
 ```text
-imagens/categoria/subcategoria/cor/modelagem-ou-estilo/nome-da-peca.jpg
+imagens/categoria/nome-da-peca.jpg
+imagens/categoria/nome-da-peca_modelo.jpg
 ```
 
 Exemplos:
 
 ```text
-imagens/vestidos/vestidos-longos/vinho/tomara-que-caia/vestido-longo-vinho-001.jpg
-imagens/acessorios/oculos-de-sol/preto/quadrado/oculos-sol-preto-001.jpg
-imagens/sapatos/sandalias/dourado/salto-fino/sandalia-dourada-001.jpg
-imagens/praia/biquinis/verde-musgo/cortininha/biquini-verde-musgo-001.jpg
+imagens/calcas/calca_jeans_reta.png
+imagens/calcas/calca_jeans_reta_modelo.png
+imagens/vestidos/vestido_longo_vinho.png
+imagens/vestidos/vestido_longo_vinho_modelo.png
+imagens/acessorios/oculos_sol_tartaruga.png
+imagens/acessorios/oculos_sol_tartaruga_modelo.png
 ```
 
-Extensoes aceitas: `.jpg`, `.jpeg`, `.png` e `.webp`.
+Regras:
+
+- O nome do arquivo vira o nome da peca no catalogo.
+- O arquivo terminado em `_modelo` e tratado como a foto da modelo usando a mesma peca.
+- A IA escolhe apenas o ID da peca principal. O sistema mostra a foto da peca e, quando existir, a foto `_modelo` junto.
+- As extensoes aceitas sao `.jpg`, `.jpeg`, `.png` e `.webp`.
+- Subpastas antigas ainda sao lidas para nao quebrar imagens ja adicionadas, mas daqui para frente use o formato simples acima.
 
 Depois de adicionar ou remover imagens, rode:
 
@@ -25,24 +34,4 @@ Depois de adicionar ou remover imagens, rode:
 npm run generate:wardrobe-catalog
 ```
 
-O sistema copia tudo para a pasta publica do site e atualiza o mapa que a Ellie usa para escolher as pecas.
-
-## Atalho simples
-
-Eu ja deixei subpastas basicas criadas com este formato:
-
-```text
-categoria/subcategoria/variado/geral/
-```
-
-Se voce ainda nao quiser separar por cor e modelagem, pode colocar as fotos direto nessas pastas. Exemplo:
-
-```text
-imagens/vestidos/vestidos-longos/variado/geral/meu-vestido-001.jpg
-```
-
-Quando quiser mais precisao, crie cores e modelagens especificas no mesmo lugar:
-
-```text
-imagens/vestidos/vestidos-longos/vinho/tomara-que-caia/meu-vestido-001.jpg
-```
+Esse comando copia as imagens para a pasta publica do site e atualiza o mapa que a Ellie usa para escolher as pecas.
