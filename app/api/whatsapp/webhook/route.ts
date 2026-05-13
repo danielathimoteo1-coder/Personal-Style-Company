@@ -89,34 +89,15 @@ const QUESTIONS: Question[] = [
   {
     key: "undertone",
     type: "text",
-    prompt: "Voce sabe seu subtom? Ex.: quente, frio, neutro, oliva. Se nao souber, responda pular.",
+    prompt:
+      "Voce sabe seu subtom? Subtom e a temperatura da sua pele por baixo do tom aparente: quente costuma combinar mais com dourado, caramelo e pessego; frio costuma combinar mais com prata, rosados e azulados; neutro transita bem entre os dois; oliva pode ter um fundo esverdeado/acinzentado. Para tentar identificar, veja se suas veias parecem mais verdes (quente), azuladas/roxas (frio) ou misturadas (neutro). Ex.: quente, frio, neutro, oliva. Se nao souber, responda pular.",
   },
   { key: "hairColor", type: "text", prompt: "Qual a cor atual do seu cabelo?" },
   { key: "eyeColor", type: "text", prompt: "Qual a cor dos seus olhos?" },
   {
-    key: "styleGoal",
-    type: "text",
-    prompt: "Qual seu objetivo de estilo? Ex.: elegante, profissional, moderno, leve.",
-  },
-  {
-    key: "routine",
-    type: "text",
-    prompt: "Como e sua rotina? Ex.: trabalho presencial, eventos, casual, academia.",
-  },
-  {
     key: "climate",
     type: "text",
     prompt: "Qual o clima/temperatura que mais influencia suas roupas?",
-  },
-  {
-    key: "budget",
-    type: "text",
-    prompt: "Orcamento para compras? Ex.: economico, medio, premium.",
-  },
-  {
-    key: "dressCode",
-    type: "text",
-    prompt: "Existe dress code? Ex.: social, casual, uniforme, discreto.",
   },
   {
     key: "makeupLevel",
@@ -127,11 +108,6 @@ const QUESTIONS: Question[] = [
     key: "favoriteColors",
     type: "text",
     prompt: "Quais cores voce gosta de usar?",
-  },
-  {
-    key: "bodyFocus",
-    type: "text",
-    prompt: "O que voce quer valorizar ou equilibrar no visual?",
   },
   {
     key: "comfortNeeds",
@@ -157,27 +133,16 @@ const QUESTIONS: Question[] = [
       "Acessorios que usa ou evita? Ex.: oculos de sol, brincos grandes, relogio, bolsas pequenas.",
   },
   {
-    key: "shoppingLimit",
-    type: "text",
-    prompt:
-      "Quer comprar pecas novas ou prefere usar o que ja tem? Existe limite de compras?",
-  },
-  {
     key: "avoidedPieces",
     type: "text",
     prompt: "Tem pecas, tecidos, cores ou estilos que voce evita?",
-  },
-  {
-    key: "restrictions",
-    type: "text",
-    prompt: "Alguma restricao ou preferencia final? Ex.: conforto, religiao, trabalho, alergias. Se nao tiver, responda pular.",
   },
 ];
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 4;
 
 const WELCOME_MESSAGE =
-  "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar com carinho por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
+  "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
 
 function getSessionStore() {
   const globalStore = globalThis as typeof globalThis & {
@@ -305,7 +270,7 @@ function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPerson
 
   return `*Prontinho, sua analise pessoal ficou pronta*
 
-Aqui e a Ellie. Preparei um resumo pratico para voce se visualizar melhor nas cores, pecas e detalhes que tendem a funcionar melhor para sua rotina.
+Eu preparei um resumo pratico para voce se visualizar melhor nas cores, pecas e detalhes que tendem a funcionar melhor para sua rotina.
 
 *Resumo*
 ${analysis.metadata.resumo}
@@ -433,7 +398,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   }
 
   session.status = "processing";
-  await sendWhatsAppText(to, "Perfeito. Agora a Ellie vai montar sua analise, sua cartela visual e algumas referencias de estilo. Pode levar alguns instantes.");
+  await sendWhatsAppText(to, "Perfeito. Agora eu vou montar sua analise, sua cartela visual e algumas referencias de estilo. Pode levar alguns instantes.");
 
   try {
     await finalizeAnalysis(to, session);
