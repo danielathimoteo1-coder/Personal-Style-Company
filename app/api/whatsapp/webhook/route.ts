@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import type { ClientProfile } from "@/lib/analysis";
 import {
   ACCEPTED_ANALYSIS_IMAGE_TYPES,
@@ -11,6 +13,7 @@ import {
   sendPaletteImage,
   sendPublicImageAsset,
   sendWhatsAppDocumentBuffer,
+  sendWhatsAppImageBuffer,
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
@@ -150,6 +153,22 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 4;
 
 const WELCOME_MESSAGE =
   "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
+
+async function sendWelcomeMessage(to: string) {
+  try {
+    const buffer = await readFile(path.join(process.cwd(), "ellie.png"));
+    await sendWhatsAppImageBuffer({
+      to,
+      buffer,
+      filename: "ellie.png",
+      mimeType: "image/png",
+      caption: WELCOME_MESSAGE,
+    });
+  } catch (error) {
+    console.error("WhatsApp Ellie image error", error);
+    await sendWhatsAppText(to, WELCOME_MESSAGE);
+  }
+}
 
 function getSessionStore() {
   const globalStore = globalThis as typeof globalThis & {
@@ -426,7 +445,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (["reiniciar", "comecar", "novo", "cancelar"].includes(normalized)) {
     const session = createSession();
     store.set(to, session);
-    await sendWhatsAppText(to, WELCOME_MESSAGE);
+    await sendWelcomeMessage(to);
     await sendWhatsAppText(to, formatQuestion(session));
     return;
   }
@@ -436,7 +455,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (!session) {
     session = createSession();
     store.set(to, session);
-    await sendWhatsAppText(to, WELCOME_MESSAGE);
+    await sendWelcomeMessage(to);
   }
 
   if (session.status === "processing") {

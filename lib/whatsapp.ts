@@ -131,6 +131,32 @@ export async function sendWhatsAppImageById({
   });
 }
 
+export async function sendWhatsAppImageBuffer({
+  to,
+  buffer,
+  filename,
+  mimeType,
+  caption,
+}: {
+  to: string;
+  buffer: Buffer;
+  filename: string;
+  mimeType: string;
+  caption?: string;
+}) {
+  const mediaId = await uploadWhatsAppMedia({
+    buffer,
+    filename,
+    mimeType,
+  });
+
+  await sendWhatsAppImageById({
+    to,
+    mediaId,
+    caption,
+  });
+}
+
 export async function sendWhatsAppDocumentById({
   to,
   mediaId,
