@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       dressCode: readString(formData.get("dressCode")),
       makeupLevel: readString(formData.get("makeupLevel")),
       favoriteColors: readString(formData.get("favoriteColors")),
+      favoriteNailPolishColor: readString(formData.get("favoriteNailPolishColor")),
       avoidedPieces: readString(formData.get("avoidedPieces")),
       bodyFocus: readString(formData.get("bodyFocus")),
       occasionNeeds: readString(formData.get("occasionNeeds")),

@@ -112,6 +112,7 @@ export type ClientProfile = {
   dressCode: string;
   makeupLevel: string;
   favoriteColors: string;
+  favoriteNailPolishColor: string;
   avoidedPieces: string;
   bodyFocus: string;
   occasionNeeds: string;

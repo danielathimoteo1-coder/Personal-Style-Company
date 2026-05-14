@@ -53,6 +53,7 @@ const initialForm = {
   dressCode: "",
   makeupLevel: "",
   favoriteColors: "",
+  favoriteNailPolishColor: "",
   avoidedPieces: "",
   bodyFocus: "",
   comfortNeeds: "",
@@ -130,7 +131,7 @@ function PaletteSwatchCard({
   color: ColorRecommendation;
   avoid?: boolean;
 }) {
-  const safeHex = /^#[0-9a-f]{6}$/i.test(color.hex) ? color.hex.toUpperCase() : "#8A3048";
+  const safeHex = /^#[0-9a-f]{6}$/i.test(color.hex) ? color.hex : "#8A3048";
 
   return (
     <article className={`paletteSwatchCard${avoid ? " avoid" : ""}`}>
@@ -141,7 +142,6 @@ function PaletteSwatchCard({
       />
       <div>
         <strong>{color.nome}</strong>
-        <code>{safeHex}</code>
         <small>{color.uso}</small>
       </div>
     </article>
@@ -652,6 +652,16 @@ export default function Home() {
             </label>
 
             <label>
+              Cor favorita de esmalte
+              <input
+                onChange={(event) => updateField("favoriteNailPolishColor", event.target.value)}
+                placeholder="Ex.: nude rosado, vermelho, francesinha, vinho..."
+                type="text"
+                value={form.favoriteNailPolishColor}
+              />
+            </label>
+
+            <label>
               Pontos que quer valorizar ou equilibrar
               <textarea
                 onChange={(event) => updateField("bodyFocus", event.target.value)}
@@ -771,6 +781,15 @@ export default function Home() {
                 ) : null}
               </div>
 
+              <div className="reportPartTitle">
+                <span>Parte 1</span>
+                <h2>Analise geral</h2>
+                <p>
+                  Primeiro, a Ellie resume cores, caracteristicas visuais,
+                  maquiagem, acessorios e direcao de guarda-roupa.
+                </p>
+              </div>
+
               <ReportSection icon={<Sparkles size={20} aria-hidden />} title="Perfil visual">
                 <IllustrationCard
                   illustration={analysis.imagens.perfil_visual}
@@ -836,6 +855,15 @@ export default function Home() {
                 <h3>Evitar ou adaptar</h3>
                 <TagList items={analysis.roupas.evitar_ou_adaptar} />
               </ReportSection>
+
+              <div className="reportPartTitle">
+                <span>Parte 2</span>
+                <h2>Guia por ocasiao</h2>
+                <p>
+                  Depois, cada ocasiao recebe uma recomendacao propria com as
+                  pecas e modelos selecionados do guarda-roupa.
+                </p>
+              </div>
 
               <ReportSection icon={<BadgeCheck size={20} aria-hidden />} title="Sugestoes por ocasiao">
                 <div className="occasionGrid">

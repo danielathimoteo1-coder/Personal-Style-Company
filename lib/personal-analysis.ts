@@ -38,6 +38,7 @@ Dados declarados pela pessoa:
 - Dress code: ${profile.dressCode || "nao informado"}
 - Nivel de maquiagem desejado: ${profile.makeupLevel || "nao informado"}
 - Cores favoritas: ${profile.favoriteColors || "nao informado"}
+- Cor favorita de esmalte: ${profile.favoriteNailPolishColor || "nao informado"}
 - Pecas, caimentos ou estilos que evita: ${profile.avoidedPieces || "nao informado"}
 - Pontos que quer valorizar/equilibrar: ${profile.bodyFocus || "nao informado"}
 - Conforto e praticidade: ${profile.comfortNeeds || "nao informado"}
@@ -61,6 +62,7 @@ Regras importantes:
 - Fale em termos de "aparente pela foto", "sugere", "pode favorecer", "vale testar".
 - Se a foto nao permitir alguma leitura, diga isso em limites_da_foto.
 - Use recomendacoes acionaveis: roupas, paleta, maquiagem, acessorios, compras e proximos passos.
+- Considere a cor favorita de esmalte como pista de gosto pessoal para labios, blush, acessorios e detalhes de acabamento, sem forcar essa cor se ela nao favorecer a paleta.
 - A pessoa nao escolhe ocasiao. Sempre entregue o guia completo para todas as 12 ocasioes fixas.
 - O catalogo e organizado de forma simples: a categoria vem da pasta principal em imagens/ e o nome do arquivo e o nome da peca.
 - Quando um item tiver modelo_disponivel=true, o sistema tambem mostrara automaticamente a imagem da modelo usando a peca. Voce nao precisa criar outro ID para isso.
@@ -70,6 +72,7 @@ Regras importantes:
 - Se o catalogo real ainda nao tiver uma peca ideal, use os itens fallback disponiveis e adapte o texto.
 - Para igreja/cerimonia discreta, trate como contexto de roupa sobria. Nao inferir religiao da pessoa.
 - Em paleta.cores_principais, paleta.neutros e paleta.cores_para_evitar, preencha sempre nome, hex e uso. Use hex real no formato #RRGGBB.
+- Os codigos hexadecimais servem apenas para renderizar as cores no sistema. Nao escreva codigos #RRGGBB dentro dos textos de uso, descricoes, looks ou recomendacoes.
 - Em paleta.cores_para_evitar, inclua cores especificas que a pessoa deve evitar perto do rosto ou adaptar, nao apenas frases genericas.
 - Em imagens, escreva titulos e legendas curtas que ajudem a ilustrar cada secao do relatorio. Nao inclua URLs.
 - Retorne somente JSON compativel com o schema solicitado.

@@ -12,7 +12,7 @@ import {
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
-import { getWardrobeAssetsForAnalysis } from "@/lib/wardrobe";
+import { getWardrobeItemsByIds, itemToImageAsset } from "@/lib/wardrobe";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -108,6 +108,11 @@ const QUESTIONS: Question[] = [
     key: "favoriteColors",
     type: "text",
     prompt: "Quais cores voce gosta de usar?",
+  },
+  {
+    key: "favoriteNailPolishColor",
+    type: "text",
+    prompt: "Qual e sua cor favorita de esmalte?",
   },
   {
     key: "comfortNeeds",
@@ -222,6 +227,7 @@ function buildProfile(answers: Partial<ClientProfile>): ClientProfile {
     dressCode: answers.dressCode || "",
     makeupLevel: answers.makeupLevel || "",
     favoriteColors: answers.favoriteColors || "",
+    favoriteNailPolishColor: answers.favoriteNailPolishColor || "",
     avoidedPieces: answers.avoidedPieces || "",
     bodyFocus: answers.bodyFocus || "",
     occasionNeeds: answers.occasionNeeds || "",
@@ -239,24 +245,18 @@ function formatQuestion(session: ConversationSession) {
   return `Ellie aqui: pergunta ${session.step + 1}/${QUESTIONS.length}\n\n${question.prompt}`;
 }
 
-function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPersonalAnalysis>>) {
-  const bestColors = analysis.paleta.cores_principais
-    .slice(0, 6)
-    .map((color) => `${color.nome} (${color.hex})`)
-    .join(", ");
-  const avoidColors = analysis.paleta.cores_para_evitar
-    .slice(0, 4)
-    .map((color) => `${color.nome} (${color.hex})`)
-    .join(", ");
-  const pieces = analysis.roupas.pecas_chave.slice(0, 6).join(", ");
-  const looks = analysis.roupas.looks_recomendados
-    .slice(0, 3)
-    .map((look) => `- ${look.ocasiao}: ${look.proposta}`)
+function formatColorList(colors: Array<{ nome: string; uso: string }>, limit = 6) {
+  return colors
+    .slice(0, limit)
+    .map((color) => `- ${color.nome}: ${color.uso}`)
     .join("\n");
-  const occasions = analysis.roupas.ocasioes_especificas
-    .slice(0, 8)
-    .map((occasion) => `- ${occasion.ocasiao}: ${occasion.look_completo}`)
-    .join("\n");
+}
+
+function formatGeneralAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPersonalAnalysis>>) {
+  const bestColors = formatColorList(analysis.paleta.cores_principais, 6);
+  const neutrals = formatColorList(analysis.paleta.neutros, 4);
+  const avoidColors = formatColorList(analysis.paleta.cores_para_evitar, 4);
+  const pieces = analysis.roupas.pecas_chave.slice(0, 7).map((piece) => `- ${piece}`).join("\n");
   const makeup = [
     ...analysis.maquiagem.pele.slice(0, 2),
     ...analysis.maquiagem.olhos.slice(0, 2),
@@ -268,30 +268,37 @@ function formatAnalysisForWhatsApp(analysis: Awaited<ReturnType<typeof runPerson
     ...analysis.acessorios.joias.slice(0, 2),
   ].join("\n- ");
 
-  return `*Prontinho, sua analise pessoal ficou pronta*
+  return `*Parte 1: analise geral da Ellie*
 
-Eu preparei um resumo pratico para voce se visualizar melhor nas cores, pecas e detalhes que tendem a funcionar melhor para sua rotina.
+Prontinho, sua analise pessoal ficou pronta. Primeiro vou te entregar a leitura geral; depois vou mandar uma mensagem separada para cada ocasiao com roupas e acessorios.
 
 *Resumo*
 ${analysis.metadata.resumo}
+
+*Caracteristicas observadas*
+- Subtom aparente: ${analysis.perfil_visual.subtom_aparente}
+- Contraste: ${analysis.perfil_visual.contraste}
+- Formato do rosto: ${analysis.perfil_visual.formato_rosto}
+- Linhas visuais: ${analysis.perfil_visual.linhas_visuais}
 
 *Paleta*
 ${analysis.paleta.nome}
 ${analysis.paleta.descricao}
 
-Melhores cores: ${bestColors}
-Cores para evitar/adaptar: ${avoidColors}
+*Cores que combinam*
+${bestColors}
 
-*Roupas*
+*Neutros de base*
+${neutrals}
+
+*Cores para evitar/adaptar*
+${avoidColors}
+
+*Direcao geral de roupas*
 ${analysis.roupas.estrategia_geral}
 
-Pecas-chave: ${pieces}
-
-*Looks sugeridos*
-${looks}
-
-*Por ocasiao*
-${occasions}
+*Pecas-chave*
+${pieces}
 
 *Maquiagem*
 - ${makeup}
@@ -299,10 +306,39 @@ ${occasions}
 *Acessorios*
 - ${accessories}
 
-*Proximos passos*
-${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}
+Agora vou separar as recomendacoes por ocasiao.`;
+}
 
-Vou enviar tambem sua cartela visual e algumas referencias visuais em imagem para ficar mais facil de imaginar tudo na pratica.`;
+function formatOccasionForWhatsApp(
+  occasion: Awaited<ReturnType<typeof runPersonalAnalysis>>["roupas"]["ocasioes_especificas"][number],
+) {
+  const pieces = getWardrobeItemsByIds(occasion.pecas, occasion.ocasiao, 4);
+  const pieceNames = pieces.map((piece) => `- ${piece.titulo}`).join("\n");
+
+  return `*${occasion.ocasiao}*
+
+*Objetivo visual*
+${occasion.objetivo_visual}
+
+*Look recomendado*
+${occasion.look_completo}
+
+*Roupas e acessorios escolhidos*
+${pieceNames}
+
+*Por que funciona*
+${occasion.motivo_da_escolha}
+
+*Cores usadas*
+${occasion.cores_usadas.map((color) => `- ${color}`).join("\n")}
+
+*Evitar ou adaptar*
+${occasion.evitar_ou_adaptar.map((item) => `- ${item}`).join("\n")}`;
+}
+
+function formatFinalStepsForWhatsApp(analysis: Awaited<ReturnType<typeof runPersonalAnalysis>>) {
+  return `*Proximos passos*
+${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}`;
 }
 
 async function finalizeAnalysis(to: string, session: ConversationSession) {
@@ -329,25 +365,34 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
     profile: buildProfile(session.answers),
   });
 
-  await sendWhatsAppTextChunks(to, formatAnalysisForWhatsApp(analysis));
+  await sendWhatsAppTextChunks(to, formatGeneralAnalysisForWhatsApp(analysis));
   await sendPaletteImage(to, analysis);
 
-  const visualAssets = getWardrobeAssetsForAnalysis(analysis, 6);
-  for (const asset of visualAssets) {
-    await sendPublicImageAsset({
-      to,
-      publicSrc: asset.src,
-      caption: `${asset.title}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
-    });
+  for (const occasion of analysis.roupas.ocasioes_especificas) {
+    await sendWhatsAppTextChunks(to, formatOccasionForWhatsApp(occasion));
 
-    if (asset.modelSrc) {
+    const occasionAssets = getWardrobeItemsByIds(occasion.pecas, occasion.ocasiao, 4)
+      .slice(0, 2)
+      .map(itemToImageAsset);
+
+    for (const asset of occasionAssets) {
       await sendPublicImageAsset({
         to,
-        publicSrc: asset.modelSrc,
-        caption: `${asset.title} na modelo\n${asset.caption}`,
+        publicSrc: asset.src,
+        caption: `${occasion.ocasiao}: ${asset.title}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
       });
+
+      if (asset.modelSrc) {
+        await sendPublicImageAsset({
+          to,
+          publicSrc: asset.modelSrc,
+          caption: `${occasion.ocasiao}: ${asset.title} na modelo`,
+        });
+      }
     }
   }
+
+  await sendWhatsAppTextChunks(to, formatFinalStepsForWhatsApp(analysis));
 }
 
 async function handleIncomingMessage(message: WhatsAppMessage) {

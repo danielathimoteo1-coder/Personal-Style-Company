@@ -489,6 +489,38 @@ textarea:focus {
   font-weight: 800;
 }
 
+.reportPartTitle {
+  background: #fffaf1;
+  border: 1px solid #e3d7c7;
+  border-left: 5px solid var(--berry);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+}
+
+.reportPartTitle span {
+  color: var(--berry);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.reportPartTitle h2,
+.reportPartTitle p {
+  margin: 0;
+}
+
+.reportPartTitle h2 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.reportPartTitle p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .clientPhoto {
   align-self: stretch;
   background: rgba(255, 255, 255, 0.08);
@@ -748,18 +780,6 @@ textarea:focus {
   font-size: 0.9rem;
   line-height: 1.25;
   overflow-wrap: anywhere;
-}
-
-.paletteSwatchCard code {
-  background: #efe6d7;
-  border: 1px solid #d8c7b2;
-  border-radius: 999px;
-  color: var(--ink);
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.78rem;
-  font-weight: 900;
-  padding: 4px 8px;
-  width: fit-content;
 }
 
 .paletteSwatchCard small {
