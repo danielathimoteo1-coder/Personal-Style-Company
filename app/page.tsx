@@ -16,7 +16,7 @@ import {
   Wand2,
 } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import type { AnalysisResult, ColorRecommendation } from "@/lib/analysis";
 import {
   getFallbackItemForOccasion,
@@ -273,6 +273,142 @@ function ReportSection({
   );
 }
 
+function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Nao foi possivel preparar uma imagem do relatorio."));
+    reader.onload = () => resolve(String(reader.result));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function imageSourceToDataUrl(src: string) {
+  const response = await fetch(src);
+
+  if (!response.ok) {
+    throw new Error("Nao foi possivel carregar uma imagem do relatorio.");
+  }
+
+  return blobToDataUrl(await response.blob());
+}
+
+function getPageStylesForDownload() {
+  return Array.from(document.styleSheets)
+    .map((sheet) => {
+      try {
+        return Array.from(sheet.cssRules)
+          .map((rule) => rule.cssText)
+          .join("\n");
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function escapeDownloadHtmlText(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function prepareReportClone(reportElement: HTMLElement) {
+  const clone = reportElement.cloneNode(true) as HTMLElement;
+  const clonedImages = Array.from(clone.querySelectorAll("img"));
+  const sourceImages = Array.from(reportElement.querySelectorAll("img"));
+
+  await Promise.all(
+    clonedImages.map(async (image, index) => {
+      const source = sourceImages[index];
+
+      if (!source?.src) return;
+
+      try {
+        image.src = await imageSourceToDataUrl(source.src);
+        image.removeAttribute("loading");
+      } catch {
+        image.src = source.src;
+      }
+    }),
+  );
+
+  return clone;
+}
+
+function buildReportDownloadHtml({
+  reportHtml,
+  styles,
+  title,
+}: {
+  reportHtml: string;
+  styles: string;
+  title: string;
+}) {
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeDownloadHtmlText(title)}</title>
+  <style>
+${styles}
+body {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.reportDownloadShell {
+  min-height: 100vh;
+}
+.reportDownloadPanel {
+  margin: 0 auto;
+  max-width: 1180px;
+}
+.reportDownloadPanel .report {
+  margin-top: 0;
+}
+@media print {
+  body {
+    background:
+      linear-gradient(135deg, rgba(18, 99, 106, 0.08), transparent 36%),
+      linear-gradient(315deg, rgba(154, 47, 86, 0.08), transparent 38%),
+      var(--bg) !important;
+  }
+
+  .reportDownloadShell {
+    padding: 18px !important;
+  }
+
+  .reportDownloadPanel {
+    box-shadow: none !important;
+  }
+}
+  </style>
+</head>
+<body>
+  <main class="app reportDownloadShell">
+    <section class="resultPanel reportDownloadPanel">
+      ${reportHtml}
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function downloadHtmlFile(html: string, filename: string) {
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 export default function Home() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -280,9 +416,12 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [outfitPreviews, setOutfitPreviews] = useState<OutfitPreview[]>([]);
   const [outfitError, setOutfitError] = useState("");
+  const [downloadError, setDownloadError] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isOutfitLoading, setIsOutfitLoading] = useState(false);
+  const [isReportDownloading, setIsReportDownloading] = useState(false);
+  const reportRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!photo) {
@@ -372,6 +511,35 @@ export default function Home() {
       setOutfitError(caught instanceof Error ? caught.message : "Erro inesperado.");
     } finally {
       setIsOutfitLoading(false);
+    }
+  }
+
+  async function handleDownloadVisualReport() {
+    setDownloadError("");
+
+    if (!analysis || !reportRef.current) {
+      setDownloadError("Gere a analise antes de baixar o relatorio visual.");
+      return;
+    }
+
+    setIsReportDownloading(true);
+    try {
+      const clone = await prepareReportClone(reportRef.current);
+      const html = buildReportDownloadHtml({
+        reportHtml: clone.outerHTML,
+        styles: getPageStylesForDownload(),
+        title: `Relatorio Ellie - ${analysis.paleta.nome}`,
+      });
+
+      downloadHtmlFile(html, "relatorio-ellie.html");
+    } catch (caught) {
+      setDownloadError(
+        caught instanceof Error
+          ? caught.message
+          : "Nao foi possivel baixar o relatorio visual agora.",
+      );
+    } finally {
+      setIsReportDownloading(false);
     }
   }
 
@@ -732,12 +900,28 @@ export default function Home() {
               <h2>{analysis ? analysis.paleta.nome : "Aguardando analise"}</h2>
             </div>
             {analysis ? (
-              <button className="ghostButton" onClick={() => window.print()} type="button">
-                <Download size={18} aria-hidden />
-                <span>PDF</span>
+              <button
+                className="ghostButton"
+                disabled={isReportDownloading}
+                onClick={handleDownloadVisualReport}
+                type="button"
+              >
+                {isReportDownloading ? (
+                  <Loader2 className="spin" size={18} aria-hidden />
+                ) : (
+                  <Download size={18} aria-hidden />
+                )}
+                <span>{isReportDownloading ? "Preparando" : "Baixar relatorio visual"}</span>
               </button>
             ) : null}
           </div>
+
+          {downloadError ? (
+            <div className="errorBox" role="alert">
+              <AlertCircle size={18} aria-hidden />
+              <span>{downloadError}</span>
+            </div>
+          ) : null}
 
           {!analysis ? (
             <div className="emptyState">
@@ -757,7 +941,7 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <article className="report">
+            <article className="report" ref={reportRef}>
               <div className={`modeBanner ${analysis.metadata.modo}`}>
                 <strong>{analysis.metadata.modo === "demo" ? "Modo demo" : "Analise com IA"}</strong>
                 <span>{analysis.metadata.aviso}</span>

@@ -131,6 +131,60 @@ export async function sendWhatsAppImageById({
   });
 }
 
+export async function sendWhatsAppDocumentById({
+  to,
+  mediaId,
+  filename,
+  caption,
+}: {
+  to: string;
+  mediaId: string;
+  filename: string;
+  caption?: string;
+}) {
+  await graphFetch(getMessagesUrl(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      to,
+      type: "document",
+      document: {
+        id: mediaId,
+        filename,
+        ...(caption ? { caption } : {}),
+      },
+    }),
+  });
+}
+
+export async function sendWhatsAppDocumentBuffer({
+  to,
+  buffer,
+  filename,
+  mimeType,
+  caption,
+}: {
+  to: string;
+  buffer: Buffer;
+  filename: string;
+  mimeType: string;
+  caption?: string;
+}) {
+  const mediaId = await uploadWhatsAppMedia({
+    buffer,
+    filename,
+    mimeType,
+  });
+
+  await sendWhatsAppDocumentById({
+    to,
+    mediaId,
+    filename,
+    caption,
+  });
+}
+
 export async function downloadWhatsAppMedia(mediaId: string) {
   const phoneNumberId = getRequiredEnv("WHATSAPP_PHONE_NUMBER_ID");
   const infoUrl = `https://graph.facebook.com/${getGraphVersion()}/${mediaId}?phone_number_id=${phoneNumberId}`;

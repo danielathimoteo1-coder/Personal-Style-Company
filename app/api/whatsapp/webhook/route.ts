@@ -5,10 +5,12 @@ import {
   MAX_ANALYSIS_IMAGE_SIZE,
   runPersonalAnalysis,
 } from "@/lib/personal-analysis";
+import { buildStandaloneReportHtml } from "@/lib/report-html";
 import {
   downloadWhatsAppMedia,
   sendPaletteImage,
   sendPublicImageAsset,
+  sendWhatsAppDocumentBuffer,
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
@@ -366,6 +368,24 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
   });
 
   await sendWhatsAppTextChunks(to, formatGeneralAnalysisForWhatsApp(analysis));
+
+  try {
+    const reportHtml = await buildStandaloneReportHtml({ analysis, photo });
+    await sendWhatsAppDocumentBuffer({
+      to,
+      buffer: Buffer.from(reportHtml, "utf8"),
+      filename: "relatorio-ellie.html",
+      mimeType: "text/plain",
+      caption: "Seu relatorio visual completo para baixar e abrir no navegador.",
+    });
+  } catch (error) {
+    console.error("WhatsApp report document error", error);
+    await sendWhatsAppText(
+      to,
+      "Eu consegui montar sua analise, mas nao consegui anexar o relatorio visual completo agora. Vou continuar enviando tudo em mensagens por aqui.",
+    );
+  }
+
   await sendPaletteImage(to, analysis);
 
   for (const occasion of analysis.roupas.ocasioes_especificas) {
