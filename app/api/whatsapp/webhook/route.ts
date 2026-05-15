@@ -18,7 +18,7 @@ import {
   sendWhatsAppText,
   sendWhatsAppTextChunks,
 } from "@/lib/whatsapp";
-import { getWardrobeItemsByIds, itemToImageAsset } from "@/lib/wardrobe";
+import { getWardrobeItemsByIds, itemToImageAsset, type WardrobeItem } from "@/lib/wardrobe";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -476,9 +476,98 @@ function formatFinalStepsForWhatsApp(analysis: Awaited<ReturnType<typeof runPers
 ${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}`;
 }
 
-function getWhatsAppOccasionImageLimit() {
-  const limit = Number(process.env.WHATSAPP_OCCASION_IMAGE_LIMIT || 1);
-  return Number.isFinite(limit) ? Math.max(0, Math.min(2, limit)) : 1;
+function getWhatsAppOccasionItemLimit() {
+  const limit = Number(process.env.WHATSAPP_OCCASION_ITEM_LIMIT || 3);
+  return Number.isFinite(limit) ? Math.max(1, Math.min(4, limit)) : 3;
+}
+
+function isAccessoryItem(item: WardrobeItem) {
+  const text = [item.categoria, item.subcategoria, item.modelagem, item.titulo, ...item.tags]
+    .join(" ")
+    .toLowerCase();
+
+  return /(acessorio|acessorios|bolsa|brinco|colar|oculos|cinto|tiara|presilha|relogio|pulseira|anel|chapeu|lenco|broche|luva|chaveiro)/.test(
+    text,
+  );
+}
+
+function getOccasionVisualItems(ids: string[] | undefined, occasionName: string) {
+  const itemLimit = getWhatsAppOccasionItemLimit();
+  const candidates = getWardrobeItemsByIds(ids, occasionName, 8);
+  const accessories = candidates.filter(isAccessoryItem);
+  const clothes = candidates.filter((item) => !isAccessoryItem(item));
+  const selected: WardrobeItem[] = [];
+  const clothingLimit = accessories.length ? Math.max(1, itemLimit - 1) : itemLimit;
+
+  for (const item of clothes) {
+    if (selected.length >= clothingLimit) break;
+    selected.push(item);
+  }
+
+  if (accessories.length && selected.length < itemLimit) {
+    selected.push(accessories[0]);
+  }
+
+  for (const item of candidates) {
+    if (selected.length >= itemLimit) break;
+    if (!selected.some((selectedItem) => selectedItem.id === item.id)) {
+      selected.push(item);
+    }
+  }
+
+  return selected.slice(0, itemLimit);
+}
+
+async function sendOccasionVisuals({
+  to,
+  occasionName,
+  items,
+}: {
+  to: string;
+  occasionName: string;
+  items: WardrobeItem[];
+}) {
+  for (const item of items) {
+    const asset = itemToImageAsset(item);
+
+    try {
+      await withTimeout(
+        sendPublicImageAsset({
+          to,
+          publicSrc: asset.src,
+          caption: `${occasionName}: ${asset.title}\nPeca do guarda-roupa.\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
+        }),
+        WHATSAPP_MEDIA_TIMEOUT_MS,
+        `Envio da peca ${asset.id}`,
+      );
+    } catch (error) {
+      console.error("WhatsApp occasion piece image error", {
+        occasion: occasionName,
+        assetId: asset.id,
+        error,
+      });
+    }
+
+    if (!asset.modelSrc || asset.modelSrc === asset.src) continue;
+
+    try {
+      await withTimeout(
+        sendPublicImageAsset({
+          to,
+          publicSrc: asset.modelSrc,
+          caption: `${occasionName}: ${asset.title}\nNa modelo.`,
+        }),
+        WHATSAPP_MEDIA_TIMEOUT_MS,
+        `Envio da modelo ${asset.id}`,
+      );
+    } catch (error) {
+      console.error("WhatsApp occasion model image error", {
+        occasion: occasionName,
+        assetId: asset.id,
+        error,
+      });
+    }
+  }
 }
 
 async function finalizeAnalysis(to: string, session: ConversationSession) {
@@ -520,17 +609,28 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
   }
 
   for (const occasion of occasions) {
+    const occasionName = textOrFallback(occasion.ocasiao, "Ocasiao");
+
     try {
       await sendWhatsAppTextChunks(to, formatOccasionForWhatsApp(occasion));
     } catch (error) {
       console.error("WhatsApp occasion text error", {
-        occasion: occasion.ocasiao,
+        occasion: occasionName,
         error,
       });
       await sendWhatsAppText(
         to,
-        `Tive dificuldade para formatar a ocasiao "${occasion.ocasiao || "sem nome"}", entao vou seguir com as proximas recomendacoes.`,
+        `Tive dificuldade para formatar a ocasiao "${occasionName}", entao vou seguir com as proximas recomendacoes.`,
       );
+    }
+
+    const visualItems = getOccasionVisualItems(
+      Array.isArray(occasion.pecas) ? occasion.pecas : [],
+      occasionName,
+    );
+
+    if (visualItems.length) {
+      await sendOccasionVisuals({ to, occasionName, items: visualItems });
     }
   }
 
@@ -544,37 +644,6 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
       to,
       "Eu nao consegui anexar a cartela visual como imagem agora, mas as cores principais ja estao descritas na analise.",
     );
-  }
-
-  for (const occasion of occasions) {
-    const occasionName = textOrFallback(occasion.ocasiao, "Ocasiao");
-    const occasionAssets = getWardrobeItemsByIds(
-      Array.isArray(occasion.pecas) ? occasion.pecas : [],
-      occasionName,
-      4,
-    )
-      .slice(0, getWhatsAppOccasionImageLimit())
-      .map(itemToImageAsset);
-
-    for (const asset of occasionAssets) {
-      try {
-        await withTimeout(
-          sendPublicImageAsset({
-            to,
-            publicSrc: asset.modelSrc || asset.src,
-            caption: `${occasionName}: ${asset.title}${asset.modelSrc ? " na modelo" : ""}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
-          }),
-          WHATSAPP_MEDIA_TIMEOUT_MS,
-          `Envio de imagem ${asset.id}`,
-        );
-      } catch (error) {
-        console.error("WhatsApp occasion image error", {
-          occasion: occasionName,
-          assetId: asset.id,
-          error,
-        });
-      }
-    }
   }
 
   try {
