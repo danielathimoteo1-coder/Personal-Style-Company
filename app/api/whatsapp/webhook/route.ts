@@ -150,6 +150,7 @@ const QUESTIONS: Question[] = [
 ];
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 4;
+const PROCESSED_MESSAGE_TTL_MS = 1000 * 60 * 60 * 12;
 
 const WELCOME_MESSAGE =
   "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
@@ -178,6 +179,14 @@ function getSessionStore() {
   return globalStore.whatsappStyleSessions;
 }
 
+function getProcessedMessageStore() {
+  const globalStore = globalThis as typeof globalThis & {
+    whatsappProcessedMessages?: Map<string, number>;
+  };
+  globalStore.whatsappProcessedMessages ||= new Map();
+  return globalStore.whatsappProcessedMessages;
+}
+
 function cleanOldSessions() {
   const now = Date.now();
   const store = getSessionStore();
@@ -187,6 +196,26 @@ function cleanOldSessions() {
       store.delete(phone);
     }
   }
+}
+
+function markMessageAsQueued(message: WhatsAppMessage) {
+  const messageId = message.id;
+
+  if (!messageId) return true;
+
+  const now = Date.now();
+  const store = getProcessedMessageStore();
+
+  for (const [id, timestamp] of store.entries()) {
+    if (now - timestamp > PROCESSED_MESSAGE_TTL_MS) {
+      store.delete(id);
+    }
+  }
+
+  if (store.has(messageId)) return false;
+
+  store.set(messageId, now);
+  return true;
 }
 
 function createSession(): ConversationSession {
@@ -362,6 +391,11 @@ function formatFinalStepsForWhatsApp(analysis: Awaited<ReturnType<typeof runPers
 ${analysis.proximos_passos.map((step) => `- ${step}`).join("\n")}`;
 }
 
+function getWhatsAppOccasionImageLimit() {
+  const limit = Number(process.env.WHATSAPP_OCCASION_IMAGE_LIMIT || 1);
+  return Number.isFinite(limit) ? Math.max(0, Math.min(2, limit)) : 1;
+}
+
 async function finalizeAnalysis(to: string, session: ConversationSession) {
   if (!session.photoMediaId) {
     await sendWhatsAppText(to, "Eu nao encontrei sua foto por aqui. Envie reiniciar para eu comecar de novo com voce.");
@@ -405,27 +439,35 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
     );
   }
 
-  await sendPaletteImage(to, analysis);
+  try {
+    await sendPaletteImage(to, analysis);
+  } catch (error) {
+    console.error("WhatsApp palette image error", error);
+    await sendWhatsAppText(
+      to,
+      "Eu nao consegui anexar a cartela visual como imagem agora, mas as cores principais ja estao descritas na analise.",
+    );
+  }
 
   for (const occasion of analysis.roupas.ocasioes_especificas) {
     await sendWhatsAppTextChunks(to, formatOccasionForWhatsApp(occasion));
 
     const occasionAssets = getWardrobeItemsByIds(occasion.pecas, occasion.ocasiao, 4)
-      .slice(0, 2)
+      .slice(0, getWhatsAppOccasionImageLimit())
       .map(itemToImageAsset);
 
     for (const asset of occasionAssets) {
-      await sendPublicImageAsset({
-        to,
-        publicSrc: asset.src,
-        caption: `${occasion.ocasiao}: ${asset.title}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
-      });
-
-      if (asset.modelSrc) {
+      try {
         await sendPublicImageAsset({
           to,
-          publicSrc: asset.modelSrc,
-          caption: `${occasion.ocasiao}: ${asset.title} na modelo`,
+          publicSrc: asset.modelSrc || asset.src,
+          caption: `${occasion.ocasiao}: ${asset.title}${asset.modelSrc ? " na modelo" : ""}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
+        });
+      } catch (error) {
+        console.error("WhatsApp occasion image error", {
+          occasion: occasion.ocasiao,
+          assetId: asset.id,
+          error,
         });
       }
     }
@@ -544,12 +586,14 @@ export async function POST(request: Request) {
   );
 
   for (const message of messages) {
-    try {
-      await handleIncomingMessage(message);
-    } catch (error) {
-      console.error("WhatsApp webhook handler error", error);
-    }
+    if (!markMessageAsQueued(message)) continue;
+
+    setImmediate(() => {
+      void handleIncomingMessage(message).catch((error) => {
+        console.error("WhatsApp webhook handler error", error);
+      });
+    });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, queued: messages.length });
 }
