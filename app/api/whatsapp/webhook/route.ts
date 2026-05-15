@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import type { ClientProfile } from "@/lib/analysis";
 import {
@@ -150,7 +151,15 @@ const QUESTIONS: Question[] = [
 ];
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 4;
+const PROCESSING_SESSION_TTL_MS = 1000 * 60 * 15;
 const PROCESSED_MESSAGE_TTL_MS = 1000 * 60 * 60 * 12;
+const SESSION_FILE_PATH =
+  process.env.WHATSAPP_SESSION_FILE ||
+  path.join(tmpdir(), "ellie-whatsapp-sessions.json");
+const WHATSAPP_MEDIA_TIMEOUT_MS = 1000 * 25;
+const WHATSAPP_REPORT_TIMEOUT_MS = 1000 * 45;
+
+let sessionsLoadedFromDisk = false;
 
 const WELCOME_MESSAGE =
   "Oi, eu sou a Ellie, sua assistente de estilo da Personal Style Company. Vou te guiar por uma analise pessoal de cores, roupas, maquiagem e acessorios. Vou fazer algumas perguntas rapidinhas e, se voce nao souber alguma resposta, pode escrever pular.";
@@ -179,6 +188,43 @@ function getSessionStore() {
   return globalStore.whatsappStyleSessions;
 }
 
+async function loadSessionsFromDisk() {
+  if (sessionsLoadedFromDisk) return;
+
+  sessionsLoadedFromDisk = true;
+
+  try {
+    const raw = await readFile(SESSION_FILE_PATH, "utf8");
+    const parsed = JSON.parse(raw) as Record<string, ConversationSession>;
+    const store = getSessionStore();
+
+    for (const [phone, session] of Object.entries(parsed)) {
+      if (
+        session &&
+        typeof session.step === "number" &&
+        typeof session.updatedAt === "number" &&
+        (session.status === "collecting" || session.status === "processing")
+      ) {
+        store.set(phone, session);
+      }
+    }
+  } catch {
+    // Fresh deployments and empty temp folders simply start without saved sessions.
+  }
+}
+
+async function saveSessionsToDisk() {
+  const store = getSessionStore();
+  const serialized = Object.fromEntries(store.entries());
+
+  try {
+    await mkdir(path.dirname(SESSION_FILE_PATH), { recursive: true });
+    await writeFile(SESSION_FILE_PATH, JSON.stringify(serialized), "utf8");
+  } catch (error) {
+    console.error("WhatsApp session persistence error", error);
+  }
+}
+
 function getProcessedMessageStore() {
   const globalStore = globalThis as typeof globalThis & {
     whatsappProcessedMessages?: Map<string, number>;
@@ -190,12 +236,16 @@ function getProcessedMessageStore() {
 function cleanOldSessions() {
   const now = Date.now();
   const store = getSessionStore();
+  let removed = false;
 
   for (const [phone, session] of store.entries()) {
     if (now - session.updatedAt > SESSION_TTL_MS) {
       store.delete(phone);
+      removed = true;
     }
   }
+
+  return removed;
 }
 
 function markMessageAsQueued(message: WhatsAppMessage) {
@@ -235,6 +285,36 @@ function getMessageText(message: WhatsAppMessage) {
     message.interactive?.list_reply?.title ||
     ""
   ).trim();
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`${label} excedeu ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function textOrFallback(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function bulletList(values: unknown, fallback: string) {
+  const items = Array.isArray(values)
+    ? values.filter(
+        (value): value is string =>
+          typeof value === "string" && value.trim().length > 0,
+      )
+    : [];
+
+  return items.length ? items.map((item) => `- ${item}`).join("\n") : `- ${fallback}`;
 }
 
 function normalizeCommand(value: string) {
@@ -362,28 +442,33 @@ Agora vou separar as recomendacoes por ocasiao.`;
 function formatOccasionForWhatsApp(
   occasion: Awaited<ReturnType<typeof runPersonalAnalysis>>["roupas"]["ocasioes_especificas"][number],
 ) {
-  const pieces = getWardrobeItemsByIds(occasion.pecas, occasion.ocasiao, 4);
+  const occasionName = textOrFallback(occasion.ocasiao, "Ocasiao");
+  const pieces = getWardrobeItemsByIds(
+    Array.isArray(occasion.pecas) ? occasion.pecas : [],
+    occasionName,
+    4,
+  );
   const pieceNames = pieces.map((piece) => `- ${piece.titulo}`).join("\n");
 
-  return `*${occasion.ocasiao}*
+  return `*${occasionName}*
 
 *Objetivo visual*
-${occasion.objetivo_visual}
+${textOrFallback(occasion.objetivo_visual, "Criar um visual coerente com sua paleta, sua rotina e seu conforto.")}
 
 *Look recomendado*
-${occasion.look_completo}
+${textOrFallback(occasion.look_completo, "Use uma combinacao equilibrada de pecas do guarda-roupa recomendado, mantendo as cores mais favoraveis proximas ao rosto.")}
 
 *Roupas e acessorios escolhidos*
-${pieceNames}
+${pieceNames || "- Vou usar as referencias visuais mais proximas disponiveis no guarda-roupa."}
 
 *Por que funciona*
-${occasion.motivo_da_escolha}
+${textOrFallback(occasion.motivo_da_escolha, "A escolha respeita sua cartela, cria harmonia visual e adapta a proposta para a ocasiao.")}
 
 *Cores usadas*
-${occasion.cores_usadas.map((color) => `- ${color}`).join("\n")}
+${bulletList(occasion.cores_usadas, "Use as cores principais da sua paleta nessa ocasiao.")}
 
 *Evitar ou adaptar*
-${occasion.evitar_ou_adaptar.map((item) => `- ${item}`).join("\n")}`;
+${bulletList(occasion.evitar_ou_adaptar, "Evite excessos de contraste ou cores que apaguem seu rosto; adapte com acessorios ou maquiagem.")}`;
 }
 
 function formatFinalStepsForWhatsApp(analysis: Awaited<ReturnType<typeof runPersonalAnalysis>>) {
@@ -422,25 +507,37 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
 
   await sendWhatsAppTextChunks(to, formatGeneralAnalysisForWhatsApp(analysis));
 
-  try {
-    const reportHtml = await buildStandaloneReportHtml({ analysis, photo });
-    await sendWhatsAppDocumentBuffer({
-      to,
-      buffer: Buffer.from(reportHtml, "utf8"),
-      filename: "relatorio-ellie.html",
-      mimeType: "text/plain",
-      caption: "Seu relatorio visual completo para baixar e abrir no navegador.",
-    });
-  } catch (error) {
-    console.error("WhatsApp report document error", error);
+  const occasions = Array.isArray(analysis.roupas.ocasioes_especificas)
+    ? analysis.roupas.ocasioes_especificas
+    : [];
+
+  if (!occasions.length) {
     await sendWhatsAppText(
       to,
-      "Eu consegui montar sua analise, mas nao consegui anexar o relatorio visual completo agora. Vou continuar enviando tudo em mensagens por aqui.",
+      "Eu nao recebi uma lista de ocasioes completa da analise. A parte geral esta pronta, mas vou precisar que voce envie reiniciar para eu refazer essa etapa.",
     );
+    return;
   }
 
+  for (const occasion of occasions) {
+    try {
+      await sendWhatsAppTextChunks(to, formatOccasionForWhatsApp(occasion));
+    } catch (error) {
+      console.error("WhatsApp occasion text error", {
+        occasion: occasion.ocasiao,
+        error,
+      });
+      await sendWhatsAppText(
+        to,
+        `Tive dificuldade para formatar a ocasiao "${occasion.ocasiao || "sem nome"}", entao vou seguir com as proximas recomendacoes.`,
+      );
+    }
+  }
+
+  await sendWhatsAppTextChunks(to, formatFinalStepsForWhatsApp(analysis));
+
   try {
-    await sendPaletteImage(to, analysis);
+    await withTimeout(sendPaletteImage(to, analysis), WHATSAPP_MEDIA_TIMEOUT_MS, "Envio da cartela");
   } catch (error) {
     console.error("WhatsApp palette image error", error);
     await sendWhatsAppText(
@@ -449,23 +546,30 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
     );
   }
 
-  for (const occasion of analysis.roupas.ocasioes_especificas) {
-    await sendWhatsAppTextChunks(to, formatOccasionForWhatsApp(occasion));
-
-    const occasionAssets = getWardrobeItemsByIds(occasion.pecas, occasion.ocasiao, 4)
+  for (const occasion of occasions) {
+    const occasionName = textOrFallback(occasion.ocasiao, "Ocasiao");
+    const occasionAssets = getWardrobeItemsByIds(
+      Array.isArray(occasion.pecas) ? occasion.pecas : [],
+      occasionName,
+      4,
+    )
       .slice(0, getWhatsAppOccasionImageLimit())
       .map(itemToImageAsset);
 
     for (const asset of occasionAssets) {
       try {
-        await sendPublicImageAsset({
-          to,
-          publicSrc: asset.modelSrc || asset.src,
-          caption: `${occasion.ocasiao}: ${asset.title}${asset.modelSrc ? " na modelo" : ""}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
-        });
+        await withTimeout(
+          sendPublicImageAsset({
+            to,
+            publicSrc: asset.modelSrc || asset.src,
+            caption: `${occasionName}: ${asset.title}${asset.modelSrc ? " na modelo" : ""}\n${asset.fallback ? "Referencia visual temporaria enquanto o guarda-roupa real e preenchido." : asset.caption}`,
+          }),
+          WHATSAPP_MEDIA_TIMEOUT_MS,
+          `Envio de imagem ${asset.id}`,
+        );
       } catch (error) {
         console.error("WhatsApp occasion image error", {
-          occasion: occasion.ocasiao,
+          occasion: occasionName,
           assetId: asset.id,
           error,
         });
@@ -473,11 +577,37 @@ async function finalizeAnalysis(to: string, session: ConversationSession) {
     }
   }
 
-  await sendWhatsAppTextChunks(to, formatFinalStepsForWhatsApp(analysis));
+  try {
+    const reportHtml = await withTimeout(
+      buildStandaloneReportHtml({ analysis, photo }),
+      WHATSAPP_REPORT_TIMEOUT_MS,
+      "Geracao do relatorio visual",
+    );
+    await withTimeout(
+      sendWhatsAppDocumentBuffer({
+        to,
+        buffer: Buffer.from(reportHtml, "utf8"),
+        filename: "relatorio-ellie.html",
+        mimeType: "text/plain",
+        caption: "Seu relatorio visual completo para baixar e abrir no navegador.",
+      }),
+      WHATSAPP_REPORT_TIMEOUT_MS,
+      "Envio do relatorio visual",
+    );
+  } catch (error) {
+    console.error("WhatsApp report document error", error);
+    await sendWhatsAppText(
+      to,
+      "Eu consegui enviar sua analise por mensagens, mas nao consegui anexar o relatorio visual completo agora.",
+    );
+  }
 }
 
 async function handleIncomingMessage(message: WhatsAppMessage) {
-  cleanOldSessions();
+  await loadSessionsFromDisk();
+  if (cleanOldSessions()) {
+    await saveSessionsToDisk();
+  }
 
   const to = message.from;
   const text = getMessageText(message);
@@ -487,6 +617,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (["reiniciar", "comecar", "novo", "cancelar"].includes(normalized)) {
     const session = createSession();
     store.set(to, session);
+    await saveSessionsToDisk();
     await sendWelcomeMessage(to);
     await sendWhatsAppText(to, formatQuestion(session));
     return;
@@ -497,10 +628,21 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   if (!session) {
     session = createSession();
     store.set(to, session);
+    await saveSessionsToDisk();
     await sendWelcomeMessage(to);
   }
 
   if (session.status === "processing") {
+    if (Date.now() - session.updatedAt > PROCESSING_SESSION_TTL_MS) {
+      store.delete(to);
+      await saveSessionsToDisk();
+      await sendWhatsAppText(
+        to,
+        "Parece que minha geracao anterior foi interrompida. Envie reiniciar para eu recomecar com voce sem ficar presa nessa etapa.",
+      );
+      return;
+    }
+
     await sendWhatsAppText(to, "Ainda estou preparando sua analise. Assim que terminar, eu te envio tudo por aqui.");
     return;
   }
@@ -525,6 +667,7 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
 
   session.step += 1;
   session.updatedAt = Date.now();
+  await saveSessionsToDisk();
 
   if (session.step < QUESTIONS.length) {
     await sendWhatsAppText(to, formatQuestion(session));
@@ -532,14 +675,18 @@ async function handleIncomingMessage(message: WhatsAppMessage) {
   }
 
   session.status = "processing";
+  await saveSessionsToDisk();
   await sendWhatsAppText(to, "Perfeito. Agora eu vou montar sua analise, sua cartela visual e algumas referencias de estilo. Pode levar alguns instantes.");
 
   try {
     await finalizeAnalysis(to, session);
     store.delete(to);
+    await saveSessionsToDisk();
   } catch (error) {
     console.error("WhatsApp analysis error", error);
     session.status = "collecting";
+    session.updatedAt = Date.now();
+    await saveSessionsToDisk();
     await sendWhatsAppText(
       to,
       "Tive um problema para finalizar sua analise agora. Pode enviar reiniciar para tentarmos de novo em alguns instantes.",
